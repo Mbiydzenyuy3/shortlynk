@@ -1,7 +1,6 @@
 export default function UrlList({ urls }) {
   return (
     <div className="url-list">
-      <h3>List URLs</h3>
       <ul>
         {urls.map((u) => (
           <li key={u.shortCode}>

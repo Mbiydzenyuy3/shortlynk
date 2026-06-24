@@ -4,7 +4,7 @@ export default function Footer() {
     <>
       <footer className="footer">
         <div className="footer-div">
-          <p>© {new Date().getFullYear()} Short.ly - A simple URL shortener</p>
+          <p>© {new Date().getFullYear()} Shortlynk - A simple URL shortener</p>
         </div>
       </footer>
     </>
