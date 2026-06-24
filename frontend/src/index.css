@@ -98,3 +98,7 @@ body {
   box-shadow: 0 0 0 3px rgba(212,134,11,0.15);
 }
 .input-field.input-field--error { border-color: var(--color-error); }
+
+@media (max-width: 768px) {
+  .auth-panel-left { display: none; }
+}
