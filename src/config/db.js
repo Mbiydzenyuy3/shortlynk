@@ -2,14 +2,13 @@
 import dotenv from "dotenv";
 dotenv.config();
 import pg from "pg";
-import fs from "fs"
-import path from "path"
+import fs from "fs";
+import path from "path";
 import { logInfo, logError, logDebug } from "../utils/logger.js";
 
 const { Pool } = pg;
 
-//Destructure env variables
-
+// Destructure env variables
 const {
   DB_USER,
   DB_NAME,
@@ -18,38 +17,59 @@ const {
   DB_PORT,
   DB_NAME_TEST,
   NODE_ENV,
+  DATABASE_URL,
 } = process.env;
 
 // 🔒 Validate DB config
-if (
-  !DB_NAME ||
-  !DB_HOST ||
-  !DB_USER ||
-  !DB_PASSWORD ||
-  !DB_PORT ||
-  !DB_NAME_TEST
-) {
-  logError(
-    "❌ Database environment variables are missing! Check your .env file."
-  );
+// When DATABASE_URL is provided (e.g. Railway), individual DB_* vars are not required.
+// When running without DATABASE_URL, require individual connection vars.
+if (!DATABASE_URL) {
+  const requiredVars = { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD };
+  const missing = Object.entries(requiredVars)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
 
+  if (missing.length > 0) {
+    logError(
+      `❌ Database environment variables are missing: ${missing.join(", ")}. ` +
+      `Set them individually or provide DATABASE_URL.`
+    );
+    process.exit(1);
+  }
+}
+
+// In test mode, also require DB_NAME_TEST
+if (NODE_ENV === "test" && !DB_NAME_TEST) {
+  logError("❌ DB_NAME_TEST is required when NODE_ENV=test.");
   process.exit(1);
 }
 
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  connectionTimeoutMillis: 2000,
-});
+// Determine which database name to use
+const activeDbName = NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME;
 
-logInfo(
-  `📦 Database is configured for: ${
-    NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME
-  }`
-);
+// Build the pool — prefer DATABASE_URL if available (Railway best practice),
+// otherwise fall back to individual connection variables.
+const poolConfig = DATABASE_URL
+  ? {
+      connectionString: DATABASE_URL,
+      connectionTimeoutMillis: 5000,
+      // Railway's internal Postgres uses self-signed certs in some setups
+      ssl: DATABASE_URL.includes("railway.internal")
+        ? false
+        : { rejectUnauthorized: false },
+    }
+  : {
+      user: DB_USER,
+      host: DB_HOST,
+      database: activeDbName,
+      password: DB_PASSWORD,
+      port: parseInt(DB_PORT, 10),
+      connectionTimeoutMillis: 5000,
+    };
+
+const pool = new Pool(poolConfig);
+
+logInfo(`📦 Database is configured for: ${activeDbName || "(via DATABASE_URL)"}`);
 
 // 🌱 Connection events
 pool.on("connect", () => {
@@ -68,6 +88,7 @@ const connectToDb = async () => {
       const client = await pool.connect();
       logInfo("✅ Database connection pool established");
       client.release();
+      return; // success — exit the retry loop
     } catch (error) {
       logError(`❌ DB connection failed (attempt ${attempt})`, error);
 
@@ -98,7 +119,7 @@ const initializeDbSchema = async () => {
    logError("❌ Error applying schema", error);
    throw error;
  } finally {
-   await client.query("SELECT pg_advisory_unlock(20250424)"); //So your DB won’t get partial schema setups even if there's a crash.
+   await client.query("SELECT pg_advisory_unlock(20250424)"); //So your DB won't get partial schema setups even if there's a crash.
    client.release();
  }
 };
