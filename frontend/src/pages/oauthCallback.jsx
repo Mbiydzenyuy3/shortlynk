@@ -1,43 +1,21 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import ShowDialogBox from '../components/Dialoguebox'
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function OAuthCallback() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [showDialog, setShowDialog] = useState(false)
-  const [dialogMessage, setDialogMessage] = useState('')
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const token = params.get('token')
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
 
     if (token) {
-      localStorage.setItem('token', token)
-      navigate('/dashboard')
+      localStorage.setItem('token', token);
+      navigate('/dashboard');
     } else {
-      // Show dialog and then redirect after a short delay
-      setDialogMessage('Login failed. No token found.')
-      setShowDialog(true)
-
-      setTimeout(() => {
-        setShowDialog(false)
-        navigate('/login')
-      }, 3000) // Wait 3 seconds before redirecting
+      navigate('/login');
     }
-  }, [location, navigate])
+  }, [location, navigate]);
 
-  return (
-    <>
-      <p>Processing login with Google...</p>
-
-      {showDialog && (
-        <ShowDialogBox
-          title="Form Error"
-          message={dialogMessage}
-          onClose={() => setShowDialog(false)}
-        />
-      )}
-    </>
-  )
+  return <p>Processing login with Google...</p>;
 }

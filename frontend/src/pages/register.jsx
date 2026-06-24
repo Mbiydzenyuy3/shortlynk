@@ -1,54 +1,107 @@
-// src/pages/Register.jsx
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { apiFetch } from '../api.js'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
+import { apiFetch } from '../api';
+import AuthLayout from '../components/AuthLayout';
 
 export default function Register() {
-  const [form, setForm] = useState({ username: '', email: '', password: '' })
-  const navigate = useNavigate()
+  const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setError('');
+    if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
+      setError('All fields are required.');
+      return;
+    }
+    setLoading(true);
     try {
       await apiFetch('/api/oauth/register', {
         method: 'POST',
         body: JSON.stringify(form),
-      })
-      navigate('/login')
+      });
+      navigate('/login');
     } catch (err) {
-      alert('Registration failed: ' + err.message)
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="form">
-      <form onSubmit={handleSubmit} className="p-4 register-form">
-        <h2 className="text-xl font-bold mb-2">Register</h2>
-        <input
-          className="input"
-          placeholder="Username"
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-        />
-        <input
-          type="email"
-          className="input"
-          placeholder="email"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
-        <input
-          type="password"
-          className="w-full p-2 border mb-2"
-          placeholder="Password"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-        <button className="cta">Register</button>
-        <div className="option">
-          <p>Already have an account? </p>
-          <a href="/login" className="create-account">
-            Login
-          </a>
+    <AuthLayout
+      title="Create account"
+      subtitle="Start shortening links in seconds"
+      toggleText="Already have an account?"
+      toggleHref="/login"
+    >
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div>
+          <label style={{ fontSize: '13px', fontWeight: 500, marginBottom: '6px', display: 'block' }}>Username</label>
+          <input
+            className="input-field"
+            type="text"
+            placeholder="yourname"
+            value={form.username}
+            onChange={e => setForm({ ...form, username: e.target.value })}
+          />
         </div>
+        <div>
+          <label style={{ fontSize: '13px', fontWeight: 500, marginBottom: '6px', display: 'block' }}>Email</label>
+          <input
+            className="input-field"
+            type="email"
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={e => setForm({ ...form, email: e.target.value })}
+          />
+        </div>
+        <div style={{ position: 'relative' }}>
+          <label style={{ fontSize: '13px', fontWeight: 500, marginBottom: '6px', display: 'block' }}>Password</label>
+          <input
+            className="input-field"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="••••••••"
+            value={form.password}
+            onChange={e => setForm({ ...form, password: e.target.value })}
+            style={{ paddingRight: '40px' }}
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword(v => !v)}
+            style={{
+              position: 'absolute',
+              right: '10px',
+              bottom: '10px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              color: 'var(--color-text-secondary)',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+
+        {error && <p style={{ color: 'var(--color-error)', fontSize: '13px', margin: 0 }}>{error}</p>}
+
+        <button
+          className="btn btn--primary"
+          type="submit"
+          disabled={loading}
+          style={{ width: '100%', height: '48px', fontSize: '15px', justifyContent: 'center', marginTop: '4px' }}
+        >
+          {loading ? 'Creating account...' : 'Create Account'}
+        </button>
       </form>
-    </div>
-  )
+    </AuthLayout>
+  );
 }
