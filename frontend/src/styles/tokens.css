@@ -1,0 +1,29 @@
+:root {
+  /* Backgrounds */
+  --color-dark: #1A1A1A;
+  --color-white: #FFFFFF;
+  --color-surface: #F8F8F8;
+  --color-border: #E5E5E5;
+
+  /* Brand */
+  --color-yellow: #D4860B;
+  --color-yellow-hover: #B8720A;
+  --color-yellow-tint: #FEF3E2;
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B7280;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-muted-dark: #A0A0A0;
+  --color-error: #EF4444;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.08);
+  --shadow-button: 0 2px 8px rgba(212,134,11,0.35);
+
+  /* Radii */
+  --radius-card: 12px;
+  --radius-input: 8px;
+  --radius-badge: 6px;
+}

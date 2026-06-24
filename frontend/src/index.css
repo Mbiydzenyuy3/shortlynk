@@ -1,9 +1,100 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "./styles/tokens.css";
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Shimmer animation for skeleton cards */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #F0F0F0 25%,
+    #E0E0E0 50%,
+    #F0F0F0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-card);
+}
+
+/* Shared button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-input);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn--primary {
+  background-color: var(--color-yellow);
+  color: #fff;
+  box-shadow: var(--shadow-button);
+}
+.btn--primary:hover:not(:disabled) {
+  background-color: var(--color-yellow-hover);
+}
+
+.btn--ghost-dark {
+  background: transparent;
+  color: var(--color-text-on-dark);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.btn--ghost-dark:hover { border-color: rgba(255,255,255,0.6); }
+
+.btn--ghost-light {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+.btn--ghost-light:hover { border-color: var(--color-text-secondary); }
+
+.btn--danger-ghost {
+  background: transparent;
+  color: var(--color-error);
+  border: 1px solid transparent;
+}
+.btn--danger-ghost:hover {
+  background-color: #FEF2F2;
+  border-color: var(--color-error);
+}
+
+/* Shared input style */
+.input-field {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  font-size: 15px;
+  color: var(--color-text-primary);
+  background: var(--color-white);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.input-field:focus {
+  border-color: var(--color-yellow);
+  box-shadow: 0 0 0 3px rgba(212,134,11,0.15);
+}
+.input-field.input-field--error { border-color: var(--color-error); }
