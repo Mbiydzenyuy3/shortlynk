@@ -17,6 +17,7 @@ import indexRouter from './src/routes/index.js'
 import authRouter from './src/routes/user.js'
 import urlRouter from './src/routes/url.js'
 import redirectRouter from './src/routes/redirect.js'
+import guestUrlRouter from './src/routes/guestUrl.js'
 
 const app = express()
 
@@ -54,6 +55,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 //API Routes
 app.use('/', indexRouter)
 app.use('/api/oauth', authRouter)
+app.use('/api/shorten/guest', guestUrlRouter)
 app.use('/api/shorten', urlRouter)
 app.use('/api/s', redirectRouter)
 
