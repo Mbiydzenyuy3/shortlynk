@@ -5,7 +5,7 @@ export const updateUrl = async (req, res) => {
   const { expireAt } = req.body;
   const userId = req.user.id;
 
-  const expiry = expireAt ? new Date(expireAt) : null;
+  const expiry = expireAt == null ? null : new Date(expireAt);
 
   const result = await pool.query(
     `UPDATE urls
