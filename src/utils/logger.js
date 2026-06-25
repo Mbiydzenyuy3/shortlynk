@@ -15,3 +15,5 @@ export function logError(...args) {
 export function logDebug(...args) {
   console.log(`${timestamp()} [DEBUG]`, ...args);
 }
+
+export const logWarn = (msg, ...args) => console.warn(`${timestamp()} [WARN] ${msg}`, ...args);

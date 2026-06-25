@@ -1,6 +1,7 @@
 // src/services/url.service.js
 import { pool } from "../config/db.js";
 import generateShortCode from "../utils/shortCodeGen.js";
+import { checkUrlSafety } from "../utils/safeBrowsing.js";
 
 export const createShortUrlService = async ({
   longUrl,
@@ -8,6 +9,9 @@ export const createShortUrlService = async ({
   expireAt,
   userId,
 }) => {
+  // Reject malicious URLs before doing anything else
+  await checkUrlSafety(longUrl);
+
   const customCode = shortCode || generateShortCode(6);
 
   // Check for custom code conflict

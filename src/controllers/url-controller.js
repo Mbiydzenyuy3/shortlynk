@@ -19,6 +19,12 @@ const createShortUrl = async (req, res) => {
       expire_at: result.expire_at || "No expiration time",
     });
   } catch (err) {
+    if (err.message === 'UNSAFE_URL') {
+      return res.status(400).json({
+        success: false,
+        message: 'This URL has been flagged as unsafe by Google Safe Browsing and cannot be shortened.',
+      });
+    }
     if (err.message.includes("short Code conflict")) {
       return res.status(409).json({ message: "Custom code already in use" });
     }

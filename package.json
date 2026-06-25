@@ -10,7 +10,8 @@
     "dev": "nodemon ./bin/www"
   },
   "jest": {
-    "transform": {}
+    "transform": {},
+    "setupFilesAfterEnv": ["./src/tests/jest.setup.cjs"]
   },
   "keywords": [],
   "author": "Leila",

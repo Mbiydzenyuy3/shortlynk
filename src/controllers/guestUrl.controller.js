@@ -18,6 +18,12 @@ export const createGuestShortUrl = async (req, res) => {
       short_code: result.short_code,
     });
   } catch (err) {
+    if (err.message === 'UNSAFE_URL') {
+      return res.status(400).json({
+        success: false,
+        message: 'This URL has been flagged as unsafe by Google Safe Browsing and cannot be shortened.',
+      });
+    }
     logError('Error creating guest short URL:', err);
     res.status(500).json({ message: 'Server error creating short URL' });
   }
