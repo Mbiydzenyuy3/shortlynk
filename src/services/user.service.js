@@ -23,11 +23,13 @@ export async function registerUser({ username, email, password }) {
     }
 
     const user = await createUserRecord({ username, email, password })
+    const token = generateToken(user)
 
     return {
       success: true,
       message: 'User registered successfully.',
-      data: user,
+      token,
+      data: { id: user.id, email: user.email, username: user.username },
     }
   } catch (err) {
     throw new Error(`Registration failed: ${err.message}`)

@@ -21,11 +21,12 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await apiFetch('/api/oauth/register', {
+      const res = await apiFetch('/api/oauth/register', {
         method: 'POST',
         body: JSON.stringify(form),
       });
-      navigate('/login');
+      localStorage.setItem('token', res.token);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {

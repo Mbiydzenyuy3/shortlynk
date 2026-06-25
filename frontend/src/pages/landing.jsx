@@ -3,6 +3,8 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HeroInput from '../components/HeroInput';
 
+const isAuthenticated = !!localStorage.getItem('token');
+
 const FEATURES = [
   {
     icon: <Link2 size={24} color="var(--color-yellow)" />,
@@ -36,7 +38,7 @@ const STEPS = [
 export default function LandingPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navbar variant="dark" isAuthenticated={false} />
+      <Navbar variant="dark" isAuthenticated={isAuthenticated} />
 
       {/* ── Hero ── */}
       <section
