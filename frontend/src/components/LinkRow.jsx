@@ -28,7 +28,7 @@ function ActionBtn({ onClick, title, children, danger }) {
         transition: 'background 150ms ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = danger ? '#FEF2F2' : 'var(--color-surface)';
+        e.currentTarget.style.backgroundColor = danger ? 'var(--color-yellow-tint)' : 'var(--color-surface)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';
@@ -144,7 +144,7 @@ export default function LinkRow({ url, onDelete, onEdit }) {
       <td style={{ ...tdStyle, textAlign: 'right' }}>
         <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
           <ActionBtn onClick={handleCopy} title="Copy short link">
-            {copyDone ? <Check size={14} color="green" /> : <Copy size={14} />}
+            {copyDone ? <Check size={14} color="var(--color-yellow)" /> : <Copy size={14} />}
           </ActionBtn>
           <a href={url.short_url} target="_blank" rel="noopener noreferrer">
             <ActionBtn title="Open link">
