@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { apiFetch } from '../api';
 import AuthLayout from '../components/AuthLayout';
 
@@ -42,6 +42,18 @@ export default function Login() {
       toggleText="Don't have an account?"
       toggleHref="/register"
     >
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: 'var(--color-text-secondary)', fontSize: '13px',
+          padding: '0 0 12px 0', fontWeight: 500,
+        }}
+      >
+        <ArrowLeft size={15} /> Back to home
+      </button>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <div>
           <label style={{ fontSize: '13px', fontWeight: 500, marginBottom: '6px', display: 'block' }}>Email</label>
