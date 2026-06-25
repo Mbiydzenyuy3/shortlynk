@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../api';
 import Navbar from '../components/Navbar';
-import LinkCard from '../components/LinkCard';
-import SkeletonCard from '../components/SkeletonCard';
-import EmptyState from '../components/EmptyState';
+import LinkTable from '../components/LinkTable';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -17,7 +15,6 @@ export default function UrlListPage() {
   const navigate = useNavigate();
   const [urls, setUrls] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
 
   const fetchUrls = async () => {
@@ -41,8 +38,22 @@ export default function UrlListPage() {
   const handleDelete = async (shortCode) => {
     try {
       await apiFetch(`/api/shorten/${shortCode}`, { method: 'DELETE' });
-      setUrls(prev => prev.filter(u => u.short_code !== shortCode));
-    } catch {}
+      setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
+    } catch {
+      setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
+    }
+  };
+
+  const handleEdit = async (shortCode, expireAt) => {
+    const data = await apiFetch(`/api/shorten/${shortCode}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ expireAt }),
+    });
+    setUrls((prev) =>
+      prev.map((u) =>
+        u.short_code === shortCode ? { ...u, expire_at: data.data?.expire_at ?? null } : u
+      )
+    );
   };
 
   const sorted = [...urls].sort((a, b) => {
@@ -57,82 +68,47 @@ export default function UrlListPage() {
     return 0;
   });
 
-  const filtered = sorted.filter(u =>
-    u.short_url?.toLowerCase().includes(search.toLowerCase()) ||
-    u.long_url?.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-surface)' }}>
       <Navbar variant="light" isAuthenticated={true} />
 
-      <main style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
         {/* Page header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
           <h1 style={{ fontSize: '22px', fontWeight: 700 }}>All Links</h1>
-          <a href="/dashboard">
-            <button className="btn btn--primary" style={{ height: '40px', padding: '0 18px', fontSize: '14px' }}>
-              + Shorten New
-            </button>
-          </a>
-        </div>
-
-        {/* Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-          <input
-            className="input-field"
-            style={{ width: '280px', height: '40px' }}
-            placeholder="Search links..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-              {!loading && `${filtered.length} links`}
-            </span>
             <select
               value={sort}
-              onChange={e => setSort(e.target.value)}
+              onChange={(e) => setSort(e.target.value)}
               style={{
-                height: '40px', padding: '0 12px',
+                height: '40px',
+                padding: '0 12px',
                 border: '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-input)',
-                fontSize: '14px', cursor: 'pointer',
+                fontSize: '14px',
+                cursor: 'pointer',
                 backgroundColor: 'var(--color-white)',
+                color: 'var(--color-text-primary)',
               }}
             >
-              {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
             </select>
+            <a href="/dashboard">
+              <button className="btn btn--primary" style={{ height: '40px', padding: '0 18px', fontSize: '14px' }}>
+                + Shorten New
+              </button>
+            </a>
           </div>
         </div>
 
-        {/* Grid */}
-        {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
-            {[1, 2, 3, 4, 5, 6].map(n => <SkeletonCard key={n} />)}
-          </div>
-        ) : filtered.length === 0 ? (
-          <EmptyState
-            message="No links found"
-            subtext={search ? 'Try a different search term.' : 'Shorten your first link from the dashboard.'}
-            ctaText={!search ? 'Go to Dashboard' : undefined}
-            ctaHref={!search ? '/dashboard' : undefined}
-          />
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
-            {filtered.map(u => (
-              <LinkCard
-                key={u.short_code}
-                short_url={u.short_url}
-                long_url={u.long_url}
-                click_count={u.click_count}
-                expire_at={u.expire_at}
-                short_code={u.short_code}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        )}
+        <LinkTable
+          urls={sorted}
+          loading={loading}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
       </main>
     </div>
   );

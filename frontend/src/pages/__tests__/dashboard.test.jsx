@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -41,9 +41,16 @@ test('handleDelete calls DELETE endpoint and removes url from state', async () =
   render(<MemoryRouter><Dashboard /></MemoryRouter>);
   await waitFor(() => screen.getByText('https://shrt.ly/abc'));
 
-  // Simulate delete by calling the apiFetch stub directly to confirm the route is right
+  // Click the Delete button rendered inside LinkRow
+  const deleteBtn = screen.getByTitle('Delete');
+  fireEvent.click(deleteBtn);
+
   await waitFor(() =>
-    expect(vi.mocked(apiFetch)).toHaveBeenNthCalledWith(1, '/api/shorten/my-urls')
+    expect(vi.mocked(apiFetch)).toHaveBeenCalledWith('/api/shorten/abc', { method: 'DELETE' })
+  );
+  // URL should be removed from the table
+  await waitFor(() =>
+    expect(screen.queryByText('https://shrt.ly/abc')).toBeNull()
   );
 });
 
@@ -56,17 +63,24 @@ test('handleEdit calls PATCH endpoint with shortCode and expireAt', async () => 
   render(<MemoryRouter><Dashboard /></MemoryRouter>);
   await waitFor(() => screen.getByText('https://shrt.ly/abc'));
 
-  // direct invocation of the PATCH path to verify it passes correct body
-  await vi.mocked(apiFetch).mock.results[0]; // initial fetch done
-  // Call PATCH manually to verify dashboard exports the right apiFetch call signature
-  await apiFetch('/api/shorten/abc', {
-    method: 'PATCH',
-    body: JSON.stringify({ expireAt: '2026-08-01' }),
-  });
-  expect(vi.mocked(apiFetch)).toHaveBeenCalledWith('/api/shorten/abc', {
-    method: 'PATCH',
-    body: JSON.stringify({ expireAt: '2026-08-01' }),
-  });
+  // Open the edit row
+  const editBtn = screen.getByTitle('Edit expiry');
+  fireEvent.click(editBtn);
+
+  // Set a date in the date input (select by type to avoid ambiguity with other empty inputs)
+  const dateInput = document.querySelector('input[type="date"]');
+  fireEvent.change(dateInput, { target: { value: '2026-08-01' } });
+
+  // Click Save
+  const saveBtn = screen.getByText('Save');
+  fireEvent.click(saveBtn);
+
+  await waitFor(() =>
+    expect(vi.mocked(apiFetch)).toHaveBeenCalledWith('/api/shorten/abc', {
+      method: 'PATCH',
+      body: JSON.stringify({ expireAt: '2026-08-01' }),
+    })
+  );
 });
 
 test('redirects to /login when no token', async () => {
