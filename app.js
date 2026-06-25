@@ -57,7 +57,7 @@ app.use('/', indexRouter)
 app.use('/api/oauth', authRouter)
 app.use('/api/shorten/guest', guestUrlRouter)
 app.use('/api/shorten', urlRouter)
-app.use('/api/s', redirectRouter)
+app.use('/s', redirectRouter)
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
