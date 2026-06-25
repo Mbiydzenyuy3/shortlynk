@@ -9,27 +9,56 @@ export const createShortUrlService = async ({
   expireAt,
   userId,
 }) => {
-  // Reject malicious URLs before doing anything else
+  // 1. Safety check first
   await checkUrlSafety(longUrl);
 
+  // 2. Deduplication for authenticated users only
+  if (userId) {
+    const existing = await pool.query(
+      'SELECT * FROM urls WHERE long_url = $1 AND user_id = $2',
+      [longUrl, userId]
+    );
+
+    if (existing.rowCount > 0) {
+      const row = existing.rows[0];
+
+      if (shortCode || expireAt) {
+        // User provided new options — update the existing record
+        const newCode = shortCode || row.short_code;
+        const newExpiry = expireAt ? new Date(expireAt) : row.expire_at;
+        const newShortUrl = `${process.env.BASE_URL}/s/${newCode}`;
+
+        const updated = await pool.query(
+          `UPDATE urls
+           SET short_code = $1, expire_at = $2, short_url = $3, updated_at = NOW()
+           WHERE id = $4
+           RETURNING short_code, short_url, long_url, created_at, expire_at`,
+          [newCode, newExpiry, newShortUrl, row.id]
+        );
+        return updated.rows[0];
+      }
+
+      // No new options — return existing record as-is
+      return row;
+    }
+  }
+
+  // 3. Fall through: new entry (guests always reach here)
   const customCode = shortCode || generateShortCode(6);
 
   // Check for custom code conflict
   if (shortCode) {
-    const existing = await pool.query(
-      "SELECT 1 FROM urls WHERE short_code=$1",
+    const conflict = await pool.query(
+      'SELECT 1 FROM urls WHERE short_code=$1',
       [shortCode]
     );
-    if (existing.rowCount > 0) {
-      throw new Error("Custom Code conflict");
+    if (conflict.rowCount > 0) {
+      throw new Error('Custom Code conflict');
     }
   }
 
-  // Use BASE_URL
   const baseUrl = process.env.BASE_URL;
   const shortUrl = `${baseUrl}/s/${customCode}`;
-
-  // Normalize expireAt
   const expireDate = expireAt ? new Date(expireAt) : null;
 
   const insertQuery = `
@@ -37,14 +66,8 @@ export const createShortUrlService = async ({
     VALUES ($1, $2, $3, $4, $5, 0)
     RETURNING short_code, short_url, long_url, created_at, expire_at
   `;
-  const values = [longUrl, customCode, expireDate, userId, shortUrl];
-
-  try {
-    const result = await pool.query(insertQuery, values);
-    return result.rows[0];
-  } catch (error) {
-    throw error;
-  }
+  const result = await pool.query(insertQuery, [longUrl, customCode, expireDate, userId, shortUrl]);
+  return result.rows[0];
 };
 
 export const getUserUrlsService = async (userId) => {
