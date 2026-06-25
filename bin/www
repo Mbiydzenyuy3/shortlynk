@@ -11,7 +11,6 @@ import { connectToDb, initializeDbSchema } from "../src/config/db.js";
 // Set up debug and port
 const dbg = debug("feature-rich-url-shortener-api:server");
 const PORT = normalizePort(process.env.PORT || "3000");
-const INIT_DB = process.env.INIT_DB === "true";
 
 // Create server
 const server = http.createServer(app);
@@ -71,10 +70,8 @@ async function startServer() {
     logInfo("🔌 Connecting to database...");
     await connectToDb();
 
-    if (INIT_DB) {
-      logInfo("📦 INIT_DB=true: Running schema initialization...");
-      await initializeDbSchema();
-    }
+    logInfo("📦 Applying database schema (idempotent)...");
+    await initializeDbSchema();
 
     server.listen(PORT);
     server.on("error", onError);

@@ -21,7 +21,7 @@ import guestUrlRouter from './src/routes/guestUrl.js'
 
 const app = express()
 
-app.set('trust proxy', true)
+app.set('trust proxy', 1)
 
 // Setup __dirname (since ES modules don't have it by default)
 const __filename = fileURLToPath(import.meta.url)
