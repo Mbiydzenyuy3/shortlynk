@@ -13,7 +13,7 @@ function pageButtonStyle(active) {
     border: '1px solid var(--color-border)',
     borderRadius: '6px',
     background: active ? 'var(--color-yellow)' : 'transparent',
-    color: active ? '#fff' : 'var(--color-text-primary)',
+    color: active ? 'var(--color-white)' : 'var(--color-text-primary)',
     fontWeight: active ? 600 : 400,
     fontSize: '13px',
     cursor: active ? 'default' : 'pointer',
