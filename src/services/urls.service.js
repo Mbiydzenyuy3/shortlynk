@@ -25,6 +25,16 @@ export const createShortUrlService = async ({
       if (shortCode || expireAt) {
         // User provided new options — update the existing record
         const newCode = shortCode || row.short_code;
+
+        // Prevent stealing another row's short_code
+        if (shortCode && shortCode !== row.short_code) {
+          const conflict = await pool.query(
+            'SELECT 1 FROM urls WHERE short_code = $1',
+            [shortCode]
+          );
+          if (conflict.rowCount > 0) throw new Error('Custom Code conflict');
+        }
+
         const newExpiry = expireAt ? new Date(expireAt) : row.expire_at;
         const newShortUrl = `${process.env.BASE_URL}/s/${newCode}`;
 
