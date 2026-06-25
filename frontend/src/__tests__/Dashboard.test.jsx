@@ -27,6 +27,7 @@ const sampleLinks = [
     long_url: 'https://example.com/some/very/long/path',
     click_count: 5,
     expire_at: null,
+    created_at: new Date().toISOString(),
   },
   {
     short_code: 'def456',
@@ -34,6 +35,7 @@ const sampleLinks = [
     long_url: 'https://another.com/page',
     click_count: 10,
     expire_at: '2026-12-31T00:00:00.000Z',
+    created_at: new Date().toISOString(),
   },
 ];
 
@@ -68,7 +70,7 @@ describe('Dashboard page', () => {
     // Never resolves during this test, so loading stays true
     apiFetch.mockImplementation(() => new Promise(() => {}));
     renderDashboard();
-    // 3 skeleton cards should appear
+    // skeleton rows should appear
     const skeletons = document.querySelectorAll('.skeleton');
     expect(skeletons.length).toBeGreaterThan(0);
   });
@@ -114,6 +116,7 @@ describe('Dashboard page', () => {
       long_url: `https://example.com/${i}`,
       click_count: i,
       expire_at: null,
+      created_at: new Date().toISOString(),
     }));
     apiFetch.mockResolvedValue({ urls: manyLinks });
     renderDashboard();
@@ -128,12 +131,12 @@ describe('Dashboard page', () => {
     });
   });
 
-  it('displays My Links section header with count', async () => {
+  it('displays All links section header with count', async () => {
     localStorage.setItem('token', 'test-token');
     apiFetch.mockResolvedValue({ urls: sampleLinks });
     renderDashboard();
     await waitFor(() => {
-      expect(screen.getByText(/my links/i)).toBeInTheDocument();
+      expect(screen.getByText(/all links/i)).toBeInTheDocument();
     });
   });
 
@@ -143,7 +146,7 @@ describe('Dashboard page', () => {
     renderDashboard();
     await waitFor(() => {
       expect(
-        screen.getByPlaceholderText(/paste your long url/i)
+        screen.getByPlaceholderText(/paste url here/i)
       ).toBeInTheDocument();
     });
   });
@@ -170,7 +173,7 @@ describe('Dashboard page', () => {
     });
 
     // Shorten a new URL
-    fireEvent.change(screen.getByPlaceholderText(/paste your long url/i), {
+    fireEvent.change(screen.getByPlaceholderText(/paste url here/i), {
       target: { value: 'https://newsite.com' },
     });
     fireEvent.click(screen.getByRole('button', { name: /shorten/i }));
@@ -215,7 +218,7 @@ describe('Dashboard page', () => {
     apiFetch.mockResolvedValue({ urls: sampleLinks });
     renderDashboard();
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/search links/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/search or filter/i)).toBeInTheDocument();
     });
   });
 
@@ -231,7 +234,7 @@ describe('Dashboard page', () => {
     });
 
     // Search for "another"
-    fireEvent.change(screen.getByPlaceholderText(/search links/i), {
+    fireEvent.change(screen.getByPlaceholderText(/search or filter/i), {
       target: { value: 'another' },
     });
 

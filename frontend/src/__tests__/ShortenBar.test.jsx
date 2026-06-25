@@ -6,7 +6,7 @@ import * as api from '../api';
 describe('ShortenBar', () => {
   it('renders the URL input and Shorten button', () => {
     render(<ShortenBar onShortened={() => {}} />);
-    expect(screen.getByPlaceholderText(/paste your long url/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/paste url here/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /shorten/i })).toBeInTheDocument();
   });
 
@@ -15,7 +15,7 @@ describe('ShortenBar', () => {
     vi.spyOn(api, 'apiFetch').mockResolvedValue({ shortened_URL: 'https://short.ly/xyz' });
     render(<ShortenBar onShortened={onShortened} />);
 
-    fireEvent.change(screen.getByPlaceholderText(/paste your long url/i), {
+    fireEvent.change(screen.getByPlaceholderText(/paste url here/i), {
       target: { value: 'https://example.com' },
     });
     fireEvent.click(screen.getByRole('button', { name: /shorten/i }));

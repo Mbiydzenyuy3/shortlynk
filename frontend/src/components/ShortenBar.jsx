@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, ExternalLink } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { apiFetch } from '../api';
 
 export default function ShortenBar({ onShortened }) {
@@ -40,62 +40,80 @@ export default function ShortenBar({ onShortened }) {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-white)',
-        borderRadius: 'var(--radius-card)',
-        boxShadow: 'var(--shadow-card)',
-        padding: '24px',
-        marginBottom: '32px',
-      }}
-    >
-      <p style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px' }}>Shorten a new link</p>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
+    <div style={{ marginBottom: '24px' }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: 'var(--color-white)',
+          border: '1px solid var(--color-border)',
+          borderRadius: '10px',
+          padding: '8px 8px 8px 16px',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      >
         <input
-          className="input-field"
-          style={{ flex: 1 }}
-          type="url"
-          placeholder="Paste your long URL here..."
+          type="text"
+          placeholder="Paste URL here"
           value={url}
-          onChange={e => setUrl(e.target.value)}
+          onChange={(e) => setUrl(e.target.value)}
+          style={{
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            fontSize: '15px',
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'transparent',
+          }}
         />
         <button
           className="btn btn--primary"
           type="submit"
           disabled={loading}
-          style={{ height: '48px', padding: '0 24px', whiteSpace: 'nowrap' }}
+          style={{ height: '36px', padding: '0 20px', fontSize: '14px', flexShrink: 0 }}
         >
           {loading ? 'Shortening...' : 'Shorten'}
         </button>
       </form>
 
-      {error && <p style={{ color: 'var(--color-error)', fontSize: '13px', marginTop: '8px' }}>{error}</p>}
+      {error && (
+        <p style={{ color: 'var(--color-error)', fontSize: '13px', marginTop: '8px', paddingLeft: '4px' }}>
+          {error}
+        </p>
+      )}
 
       {result && (
         <div
           style={{
-            marginTop: '14px',
-            backgroundColor: 'var(--color-surface)',
-            borderLeft: '4px solid var(--color-yellow)',
-            borderRadius: 'var(--radius-input)',
-            padding: '12px 16px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            animation: 'fadeIn 300ms ease',
+            gap: '12px',
+            marginTop: '10px',
+            padding: '10px 16px',
+            background: 'var(--color-white)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '8px',
           }}
         >
-          <span style={{ color: 'var(--color-yellow)', fontWeight: 700 }}>{result}</span>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <button className="btn btn--ghost-light" onClick={handleCopy} style={{ padding: '5px 10px' }} title="Copy">
-              {copied ? <Check size={15} color="green" /> : <Copy size={15} />}
-            </button>
-            <a href={result} target="_blank" rel="noopener noreferrer">
-              <button className="btn btn--ghost-light" style={{ padding: '5px 10px' }} title="Open">
-                <ExternalLink size={15} />
-              </button>
-            </a>
-          </div>
+          <a
+            href={result}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--color-yellow)', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}
+          >
+            {result}
+          </a>
+          <button
+            type="button"
+            className="btn btn--ghost-light"
+            style={{ marginLeft: 'auto', height: '30px', padding: '0 12px', fontSize: '13px' }}
+            onClick={handleCopy}
+          >
+            {copied ? <Check size={13} color="green" /> : <Copy size={13} />}
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
         </div>
       )}
     </div>
