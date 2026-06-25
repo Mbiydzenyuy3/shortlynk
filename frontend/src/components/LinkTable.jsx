@@ -35,6 +35,7 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => { setCurrentPage(1); }, [search]);
+  useEffect(() => { setCurrentPage(1); }, [urls.length]);
 
   const filtered = urls.filter(
     (u) =>

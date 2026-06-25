@@ -28,7 +28,7 @@ function ActionBtn({ onClick, title, children, danger }) {
         transition: 'background 150ms ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = danger ? 'var(--color-yellow-tint)' : 'var(--color-surface)';
+        e.currentTarget.style.backgroundColor = danger ? 'var(--color-error-tint)' : 'var(--color-surface)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';

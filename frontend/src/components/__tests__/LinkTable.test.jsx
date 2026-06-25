@@ -76,3 +76,20 @@ test('does not show pagination when 20 or fewer urls', () => {
   render(<LinkTable urls={makeUrls(20)} loading={false} onDelete={noop} onEdit={noop} />);
   expect(screen.queryByText('›')).not.toBeInTheDocument();
 });
+
+test('resets to page 1 when urls shrink below current page', () => {
+  const { rerender } = render(
+    <LinkTable urls={makeUrls(25)} loading={false} onDelete={noop} onEdit={noop} />
+  );
+  // Navigate to page 2 — use getAllByText since table rows also contain "2"
+  const pageTwoBtns = screen.getAllByRole('button', { name: '2' });
+  fireEvent.click(pageTwoBtns[0]);
+  expect(screen.getByText('›')).toBeInTheDocument();
+
+  // Simulate delete bringing count to 20 (totalPages drops to 1)
+  rerender(<LinkTable urls={makeUrls(20)} loading={false} onDelete={noop} onEdit={noop} />);
+  // Pagination should be gone (totalPages === 1)
+  expect(screen.queryByText('›')).not.toBeInTheDocument();
+  // All 20 items visible (no blank table)
+  expect(screen.getByText('(20)')).toBeInTheDocument();
+});

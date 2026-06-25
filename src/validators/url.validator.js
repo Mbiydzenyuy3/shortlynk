@@ -13,4 +13,9 @@ const shortenUrlSchema = Joi.object({
   expireAt: Joi.date().iso().optional(),
 });
 
+// Schema for PATCH /:shortCode — only expireAt is accepted (longUrl not required)
+export const updateUrlSchema = Joi.object({
+  expireAt: Joi.date().iso().allow(null).optional(),
+});
+
 export default shortenUrlSchema;

@@ -32,9 +32,12 @@ export default function Dashboard() {
     try {
       await apiFetch(`/api/shorten/${shortCode}`, { method: 'DELETE' });
       setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
-    } catch {
-      // silently ignore — server-side 404 still removes from view
-      setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
+    } catch (err) {
+      if (err.message === 'URL not found.') {
+        // Server confirmed the URL no longer exists — remove from local state
+        setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
+      }
+      // Network errors / 5xx: leave row in place (server may still have the record)
     }
   };
 

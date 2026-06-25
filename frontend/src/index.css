@@ -55,7 +55,7 @@ body {
 
 .btn--primary {
   background-color: var(--color-yellow);
-  color: #fff;
+  color: var(--color-white);
   box-shadow: var(--shadow-button);
 }
 .btn--primary:hover:not(:disabled) {
@@ -82,7 +82,7 @@ body {
   border: 1px solid transparent;
 }
 .btn--danger-ghost:hover {
-  background-color: #FEF2F2;
+  background-color: var(--color-error-tint);
   border-color: var(--color-error);
 }
 
