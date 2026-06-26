@@ -46,7 +46,7 @@ export default function HeroInput() {
       <form onSubmit={handleShorten} className="responsive-flex-col" style={{ display: 'flex', gap: '10px' }}>
         <input
           className="input-field"
-          style={{ flex: 1, height: '56px', padding: '0 28px', backgroundColor: 'rgba(255,255,255,0.95)' }}
+          style={{ flex: 1, minHeight: '56px', height: '56px', padding: '0 28px', backgroundColor: 'rgba(255,255,255,0.95)', boxSizing: 'border-box' }}
           type="text"
           placeholder="Paste your long URL here..."
           value={url}
@@ -56,7 +56,7 @@ export default function HeroInput() {
           className="btn btn--primary"
           type="submit"
           disabled={loading}
-          style={{ height: '56px', padding: '0 28px', fontSize: '15px', fontWeight: 600, whiteSpace: 'nowrap' }}
+          style={{ minHeight: '56px', height: '56px', padding: '0 28px', fontSize: '15px', fontWeight: 600, whiteSpace: 'nowrap', boxSizing: 'border-box' }}
         >
           {loading ? 'Shortening...' : 'Shorten'}
         </button>
