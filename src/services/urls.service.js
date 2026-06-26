@@ -3,7 +3,7 @@ import { pool } from "../config/db.js";
 import generateShortCode from "../utils/shortCodeGen.js";
 import { checkUrlSafety } from "../utils/safeBrowsing.js";
 import geoip from "geoip-lite";
-import UAParser from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 
 export const createShortUrlService = async ({
   longUrl,
