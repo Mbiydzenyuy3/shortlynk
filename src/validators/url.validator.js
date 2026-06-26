@@ -7,10 +7,10 @@ const shortenUrlSchema = Joi.object({
     "string.max": "The longUrl must be 2048 characters or fewer.",
     "any.required": "The longUrl field is required.",
   }),
-  customCode: Joi.string().alphanum().min(4).max(10).optional().messages({
-    "string.base": "The customCode must be a string.",
+  shortCode: Joi.string().min(4).max(30).optional().messages({
+    "string.base": "The shortCode must be a string.",
   }),
-  expireAt: Joi.date().iso().optional(),
+  expiresAt: Joi.date().iso().optional(),
 });
 
 // Schema for PATCH /:shortCode — only expireAt is accepted (longUrl not required)
