@@ -118,6 +118,10 @@ body {
     padding: 64px 16px !important;
   }
   
+  .auth-card-pad {
+    padding: 24px !important;
+  }
+  
   .responsive-flex-wrap {
     flex-wrap: wrap !important;
   }

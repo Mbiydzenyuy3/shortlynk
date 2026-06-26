@@ -56,7 +56,7 @@ export default function Dashboard() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-surface)' }}>
       <Navbar variant="light" isAuthenticated={true} />
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
+      <main className="responsive-pad" style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
         <ShortenBar onShortened={fetchUrls} />
         <LinkTable
           urls={urls}

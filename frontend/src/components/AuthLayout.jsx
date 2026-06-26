@@ -52,6 +52,7 @@ export default function AuthLayout({ children, title, subtitle, toggleText, togg
           justifyContent: 'center',
           padding: '32px',
         }}
+        className="responsive-pad"
       >
         <div
           style={{
@@ -62,6 +63,7 @@ export default function AuthLayout({ children, title, subtitle, toggleText, togg
             width: '100%',
             maxWidth: '440px',
           }}
+          className="auth-card-pad"
         >
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
