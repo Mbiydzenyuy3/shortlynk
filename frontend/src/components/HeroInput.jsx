@@ -43,7 +43,7 @@ export default function HeroInput() {
 
   return (
     <div style={{ width: '100%', maxWidth: '640px' }}>
-      <form onSubmit={handleShorten} style={{ display: 'flex', gap: '10px' }}>
+      <form onSubmit={handleShorten} className="responsive-flex-col" style={{ display: 'flex', gap: '10px' }}>
         <input
           className="input-field"
           style={{ flex: 1, height: '56px', backgroundColor: 'rgba(255,255,255,0.95)' }}

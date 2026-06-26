@@ -49,7 +49,7 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }) {
 
   return (
     <nav
-      className={`navbar ${isDark ? 'navbar--dark' : 'navbar--light'}`}
+      className={`navbar responsive-pad ${isDark ? 'navbar--dark' : 'navbar--light'}`}
       style={{
         position: 'sticky',
         top: 0,
@@ -107,7 +107,7 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }) {
                 }}>
                   {initials}
                 </div>
-                <span style={{ fontSize: '13px', fontWeight: 500, maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="hide-xs" style={{ fontSize: '13px', fontWeight: 500, maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {username}
                 </span>
                 <ChevronDown size={14} />

@@ -48,6 +48,7 @@ export default function ShortenBar({ onShortened }) {
     <div style={{ marginBottom: '24px' }}>
       <form
         onSubmit={handleSubmit}
+        className="responsive-flex-wrap"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -55,7 +56,7 @@ export default function ShortenBar({ onShortened }) {
           background: 'var(--color-white)',
           border: '1px solid var(--color-border)',
           borderRadius: '10px',
-          padding: '8px 8px 8px 16px',
+          padding: '8px 12px',
           boxShadow: 'var(--shadow-card)',
         }}
       >

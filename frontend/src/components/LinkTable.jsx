@@ -82,7 +82,8 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
       </div>
 
       {/* Table */}
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="table-responsive-wrapper">
+      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
         <thead>
           <tr style={{ height: '40px', backgroundColor: 'var(--color-surface)' }}>
             <th style={{ ...thStyle, width: '120px' }}>Created</th>
@@ -124,6 +125,7 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
           )}
         </tbody>
       </table>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (

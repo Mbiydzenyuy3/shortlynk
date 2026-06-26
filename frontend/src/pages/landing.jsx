@@ -49,10 +49,10 @@ export default function LandingPage() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '80px 32px 64px',
           textAlign: 'center',
           gap: '32px',
         }}
+        className="responsive-section-pad"
       >
         <div style={{ maxWidth: '680px' }}>
           <h1
@@ -99,7 +99,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ── */}
-      <section id="features" style={{ backgroundColor: 'var(--color-white)', padding: '96px 32px' }}>
+      <section id="features" className="responsive-section-pad" style={{ backgroundColor: 'var(--color-white)' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <h2 style={{ textAlign: 'center', fontSize: '36px', fontWeight: 700, marginBottom: '56px' }}>
             Everything you need to share smarter
@@ -144,7 +144,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section style={{ backgroundColor: 'var(--color-surface)', padding: '96px 32px' }}>
+      <section className="responsive-section-pad" style={{ backgroundColor: 'var(--color-surface)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{ textAlign: 'center', fontSize: '36px', fontWeight: 700, marginBottom: '56px' }}>
             Up and running in seconds
@@ -185,9 +185,9 @@ export default function LandingPage() {
       <section
         style={{
           backgroundColor: 'var(--color-dark)',
-          padding: '96px 32px',
           textAlign: 'center',
         }}
+        className="responsive-section-pad"
       >
         <h2 style={{ color: 'var(--color-text-on-dark)', fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>
           Start shortening for free
