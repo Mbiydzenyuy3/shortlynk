@@ -19,7 +19,7 @@ export async function registerUser({ username, email, password }) {
   try {
     const existing = await findByEmail(email)
     if (existing) {
-      throw new Error('Email already in use.')
+      throw new Error('Email already used by another user')
     }
 
     const user = await createUserRecord({ username, email, password })
@@ -32,7 +32,7 @@ export async function registerUser({ username, email, password }) {
       data: { id: user.id, email: user.email, username: user.username },
     }
   } catch (err) {
-    throw new Error(`Registration failed: ${err.message}`)
+    throw err
   }
 }
 
@@ -41,12 +41,12 @@ export async function loginUser({ email, password }) {
   try {
     const user = await findByEmail(email)
     if (!user) {
-      throw new Error('User not found.')
+      throw new Error('The password or email is not correct')
     }
 
     const isMatch = await comparePassword(password, user.password)
     if (!isMatch) {
-      throw new Error('Invalid email or password.')
+      throw new Error('The password or email is not correct')
     }
 
     const token = generateToken(user)
@@ -58,6 +58,6 @@ export async function loginUser({ email, password }) {
       data: { id: user.id, email: user.email, username: user.username },
     }
   } catch (err) {
-    throw new Error(`Login failed: ${err.message}`)
+    throw err
   }
 }
