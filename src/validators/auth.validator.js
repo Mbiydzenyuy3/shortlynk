@@ -15,11 +15,11 @@ export const registerSchema = Joi.object({
   password: Joi.string()
     .min(6)
     .max(30)
-    .pattern(new RegExp("^[a-zA-Z0-9]{6,30}$"))
+    .pattern(new RegExp("(?=.*[!@#$%^&*(),.?\":{}|<>])"))
     .required()
     .messages({
       "string.pattern.base":
-        "Password must be alphanumeric and between 6 and 30 characters",
+        "Password must include at least one special character",
       "string.min": "Password should have at least 6 characters",
       "string.max": "Password should have at most 30 characters",
       "any.required": "Password is required",

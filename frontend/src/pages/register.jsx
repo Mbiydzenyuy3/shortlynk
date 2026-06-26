@@ -105,6 +105,15 @@ export default function Register() {
           </button>
         </div>
 
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '-6px', marginBottom: '4px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: form.password.length >= 6 && form.password.length <= 30 ? 'var(--color-success, #10b981)' : 'inherit' }}>
+            {form.password.length >= 6 && form.password.length <= 30 ? '✓' : '○'} 6 to 30 characters
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: /[!@#$%^&*(),.?":{}|<>]/.test(form.password) ? 'var(--color-success, #10b981)' : 'inherit' }}>
+            {/[!@#$%^&*(),.?":{}|<>]/.test(form.password) ? '✓' : '○'} At least 1 special character
+          </div>
+        </div>
+
         {error && <p style={{ color: 'var(--color-error)', fontSize: '13px', margin: 0 }}>{error}</p>}
 
         <button

@@ -4,6 +4,7 @@ import { apiFetch } from '../api';
 
 export default function ShortenBar({ onShortened }) {
   const [url, setUrl] = useState('');
+  const [shortCode, setShortCode] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,12 +20,16 @@ export default function ShortenBar({ onShortened }) {
     }
     setLoading(true);
     try {
+      const body = { longUrl: url.trim() };
+      if (shortCode.trim()) body.shortCode = shortCode.trim();
+
       const data = await apiFetch('/api/shorten', {
         method: 'POST',
-        body: JSON.stringify({ longUrl: url.trim() }),
+        body: JSON.stringify(body),
       });
       setResult(data.shortened_URL);
       setUrl('');
+      setShortCode('');
       onShortened();
     } catch (err) {
       setError(err.message || 'Failed to shorten URL.');
@@ -60,12 +65,29 @@ export default function ShortenBar({ onShortened }) {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           style={{
-            flex: 1,
+            flex: 2,
             border: 'none',
             outline: 'none',
             fontSize: '15px',
             color: 'var(--color-text-primary)',
             backgroundColor: 'transparent',
+            minWidth: '150px',
+          }}
+        />
+        <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--color-border)' }} />
+        <input
+          type="text"
+          placeholder="Custom alias (optional)"
+          value={shortCode}
+          onChange={(e) => setShortCode(e.target.value)}
+          style={{
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            fontSize: '14px',
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'transparent',
+            minWidth: '100px',
           }}
         />
         <button
