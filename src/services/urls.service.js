@@ -136,7 +136,12 @@ export const handleRedirectService = async (shortCode, req) => {
     const cleanIp = ip?.replace('::ffff:', '');
     const geo = geoip.lookup(cleanIp);
     if (geo && geo.country) {
-      country = geo.country;
+      try {
+        const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+        country = regionNames.of(geo.country) || geo.country;
+      } catch {
+        country = geo.country;
+      }
     }
 
     // Device and browser from User-Agent
