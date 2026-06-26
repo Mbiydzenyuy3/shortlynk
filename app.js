@@ -43,7 +43,19 @@ app.disable('x-powered-by')
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL?.replace(/\/$/, ''),
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        process.env.FRONTEND_URL?.replace(/\/$/, ''),
+        'https://shortlynk.store',
+        'https://www.shortlynk.store',
+        'http://localhost:5173'
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 )
