@@ -58,12 +58,14 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
     >
       {/* Panel header */}
       <div
+        className="responsive-flex-col"
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 20px',
           borderBottom: '1px solid var(--color-border)',
+          gap: '12px'
         }}
       >
         <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)' }}>

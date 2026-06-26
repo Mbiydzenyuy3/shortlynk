@@ -48,15 +48,15 @@ export default function ShortenBar({ onShortened }) {
     <div style={{ marginBottom: '24px' }}>
       <form
         onSubmit={handleSubmit}
-        className="responsive-flex-wrap"
+        className="responsive-flex-col"
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '12px',
           background: 'var(--color-white)',
           border: '1px solid var(--color-border)',
           borderRadius: '10px',
-          padding: '8px 12px',
+          padding: '12px',
           boxShadow: 'var(--shadow-card)',
         }}
       >
@@ -73,9 +73,10 @@ export default function ShortenBar({ onShortened }) {
             color: 'var(--color-text-primary)',
             backgroundColor: 'transparent',
             minWidth: '150px',
+            width: '100%'
           }}
         />
-        <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--color-border)' }} />
+        <div className="hide-xs" style={{ width: '1px', height: '24px', backgroundColor: 'var(--color-border)' }} />
         <input
           type="text"
           placeholder="Custom alias (optional)"

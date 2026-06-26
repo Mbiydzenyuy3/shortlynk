@@ -106,7 +106,7 @@ body {
 .input-field.input-field--error { border-color: var(--color-error); }
 
 @media (max-width: 768px) {
-  .auth-panel-left { display: none; }
+  .auth-panel-left { display: none !important; }
   
   /* Responsive utility classes */
   .responsive-pad {
