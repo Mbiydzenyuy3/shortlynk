@@ -7,9 +7,15 @@ const shortenUrlSchema = Joi.object({
     "string.max": "The longUrl must be 2048 characters or fewer.",
     "any.required": "The longUrl field is required.",
   }),
-  shortCode: Joi.string().min(4).max(30).optional().messages({
-    "string.base": "The shortCode must be a string.",
-  }),
+  shortCode: Joi.string()
+    .min(4)
+    .max(30)
+    .pattern(/^[a-zA-Z0-9-_]+$/)
+    .optional()
+    .messages({
+      "string.base": "The shortCode must be a string.",
+      "string.pattern.base": "Custom alias can only contain letters, numbers, hyphens (-), and underscores (_)."
+    }),
   expiresAt: Joi.date().iso().optional(),
 });
 

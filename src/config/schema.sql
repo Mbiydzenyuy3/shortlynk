@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS urls (
 
 -- Widen long_url to TEXT on existing installations (VARCHAR(255) is too narrow)
 ALTER TABLE urls ALTER COLUMN long_url TYPE TEXT;
+-- Widen short_code to VARCHAR(30) to support descriptive custom aliases
+ALTER TABLE urls ALTER COLUMN short_code TYPE VARCHAR(30);
 
 -- CLICK LOGS TABLE
 CREATE TABLE IF NOT EXISTS click_logs (

@@ -96,7 +96,13 @@ export default function Login() {
           </button>
         </div>
 
-        {error && <p style={{ color: 'var(--color-error)', fontSize: '13px', margin: 0 }}>{error}</p>}
+        {error && (
+          <div style={{ padding: '10px 12px', backgroundColor: 'var(--color-error-tint)', borderLeft: '4px solid var(--color-error)', borderRadius: '4px' }}>
+            <p style={{ color: 'var(--color-error)', fontSize: '13px', margin: 0, fontWeight: 500 }}>
+              {error}
+            </p>
+          </div>
+        )}
 
         <button
           className="btn btn--primary"

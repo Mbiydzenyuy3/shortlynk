@@ -79,9 +79,11 @@ export default function ShortenBar({ onShortened }) {
         <div className="hide-xs" style={{ width: '1px', height: '24px', backgroundColor: 'var(--color-border)' }} />
         <input
           type="text"
-          placeholder="Custom alias (optional)"
+          placeholder="Alias (e.g. my-link)"
           value={shortCode}
           onChange={(e) => setShortCode(e.target.value)}
+          pattern="^[a-zA-Z0-9-_]+$"
+          title="Only letters, numbers, hyphens, and underscores (4-30 chars)"
           style={{
             flex: 1,
             border: 'none',
@@ -102,9 +104,13 @@ export default function ShortenBar({ onShortened }) {
         </button>
       </form>
 
+      <div style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)', paddingLeft: '4px', marginTop: '8px' }}>
+        * <strong>Custom alias (optional):</strong> 4-30 characters. Letters, numbers, hyphens, and underscores only.
+      </div>
+
       {error && (
         <p style={{ color: 'var(--color-error)', fontSize: '13px', marginTop: '8px', paddingLeft: '4px' }}>
-          {error}
+          <strong>Error:</strong> {error}
         </p>
       )}
 
