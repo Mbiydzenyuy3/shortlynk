@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Copy, Check, ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { Copy, Check, ExternalLink, Pencil, Trash2, BarChart2 } from 'lucide-react';
+import ClickSources from './ClickSources';
+import { apiFetch } from '../api';
 
 const tdStyle = {
   padding: '0 16px',
@@ -44,6 +46,9 @@ export default function LinkRow({ url, onDelete, onEdit }) {
   const [editDate, setEditDate] = useState('');
   const [editError, setEditError] = useState('');
   const [copyDone, setCopyDone] = useState(false);
+  const [showSources, setShowSources] = useState(false);
+  const [sourcesData, setSourcesData] = useState(null);
+  const [loadingSources, setLoadingSources] = useState(false);
 
   const createdAt =
     new Date(url.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
@@ -68,6 +73,23 @@ export default function LinkRow({ url, onDelete, onEdit }) {
       setEditMode(false);
     } catch (err) {
       setEditError(err.message || 'Failed to update expiry.');
+    }
+  };
+
+  const handleToggleSources = async () => {
+    if (!showSources && !sourcesData) {
+      setLoadingSources(true);
+      setShowSources(true);
+      try {
+        const res = await apiFetch(`/s/${url.short_code}/sources`);
+        setSourcesData(res.data);
+      } catch (err) {
+        // Failed to load sources
+      } finally {
+        setLoadingSources(false);
+      }
+    } else {
+      setShowSources(!showSources);
     }
   };
 
@@ -116,49 +138,61 @@ export default function LinkRow({ url, onDelete, onEdit }) {
   }
 
   return (
-    <tr
-      style={{ ...rowBase, height: '56px' }}
-      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-    >
-      <td style={{ ...tdStyle, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-        {createdAt}
-      </td>
-      <td style={tdStyle}>
-        <span style={{ color: 'var(--color-yellow)', fontWeight: 600 }}>{url.short_url}</span>
-      </td>
-      <td
-        style={{
-          ...tdStyle,
-          maxWidth: '320px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          color: 'var(--color-text-secondary)',
-        }}
-        title={url.long_url}
+    <>
+      <tr
+        style={{ ...rowBase, height: '56px', borderBottom: showSources ? 'none' : '1px solid var(--color-border)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
-        {url.long_url}
-      </td>
-      <td style={{ ...tdStyle, textAlign: 'center' }}>{url.click_count ?? 0}</td>
-      <td style={{ ...tdStyle, textAlign: 'right' }}>
-        <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
-          <ActionBtn onClick={handleCopy} title="Copy short link">
-            {copyDone ? <Check size={14} color="var(--color-yellow)" /> : <Copy size={14} />}
-          </ActionBtn>
-          <a href={url.short_url} target="_blank" rel="noopener noreferrer">
-            <ActionBtn title="Open link">
-              <ExternalLink size={14} />
+        <td style={{ ...tdStyle, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+          {createdAt}
+        </td>
+        <td style={tdStyle}>
+          <span style={{ color: 'var(--color-yellow)', fontWeight: 600 }}>{url.short_url}</span>
+        </td>
+        <td
+          style={{
+            ...tdStyle,
+            maxWidth: '320px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            color: 'var(--color-text-secondary)',
+          }}
+          title={url.long_url}
+        >
+          {url.long_url}
+        </td>
+        <td style={{ ...tdStyle, textAlign: 'center' }}>{url.click_count ?? 0}</td>
+        <td style={{ ...tdStyle, textAlign: 'right' }}>
+          <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
+            <ActionBtn onClick={handleToggleSources} title="Analytics">
+              <BarChart2 size={14} color={showSources ? 'var(--color-yellow)' : 'var(--color-text-secondary)'} />
             </ActionBtn>
-          </a>
-          <ActionBtn onClick={handleEditOpen} title="Edit expiry">
-            <Pencil size={14} />
-          </ActionBtn>
-          <ActionBtn onClick={() => onDelete(url.short_code)} title="Delete" danger>
-            <Trash2 size={14} />
-          </ActionBtn>
-        </div>
-      </td>
-    </tr>
+            <ActionBtn onClick={handleCopy} title="Copy short link">
+              {copyDone ? <Check size={14} color="var(--color-yellow)" /> : <Copy size={14} />}
+            </ActionBtn>
+            <a href={url.short_url} target="_blank" rel="noopener noreferrer">
+              <ActionBtn title="Open link">
+                <ExternalLink size={14} />
+              </ActionBtn>
+            </a>
+            <ActionBtn onClick={handleEditOpen} title="Edit expiry">
+              <Pencil size={14} />
+            </ActionBtn>
+            <ActionBtn onClick={() => onDelete(url.short_code)} title="Delete" danger>
+              <Trash2 size={14} />
+            </ActionBtn>
+          </div>
+        </td>
+      </tr>
+      {showSources && (
+        <tr>
+          <td colSpan={5} style={{ padding: 0 }}>
+            <ClickSources data={sourcesData} loading={loadingSources} />
+          </td>
+        </tr>
+      )}
+    </>
   );
 }

@@ -2,6 +2,7 @@ import express from 'express'
 import {
   getRedirectUrl,
   getUrlStats,
+  getClickSources,
 } from '../controllers/redirecturl-controller.js'
 import { authMiddleware } from '../middlewares/user-auth.middleware.js'
 
@@ -53,5 +54,30 @@ router.get('/:shortCode', getRedirectUrl)
  *         description: Short URL not found
  */
 router.get('/:shortCode/stats', authMiddleware, getUrlStats)
+
+/**
+ * @swagger
+ * /s/{shortCode}/sources:
+ *   get:
+ *     summary: Returns aggregated click source analytics (referrers, countries, devices, browsers)
+ *     tags: [Redirect]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: shortCode
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The short code of the shortened URL
+ *     responses:
+ *       200:
+ *         description: Click sources retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Short URL not found
+ */
+router.get('/:shortCode/sources', authMiddleware, getClickSources)
 
 export default router

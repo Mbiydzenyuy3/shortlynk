@@ -39,6 +39,12 @@ CREATE INDEX IF NOT EXISTS idx_short_urls_user_id ON urls(user_id);
 CREATE INDEX IF NOT EXISTS idx_urls_short_code ON urls(short_code);
 CREATE INDEX IF NOT EXISTS idx_click_logs_url_id ON click_logs(url_id);
 
+-- Add click source tracking columns (safe for existing installations)
+ALTER TABLE click_logs ADD COLUMN IF NOT EXISTS referrer TEXT;
+ALTER TABLE click_logs ADD COLUMN IF NOT EXISTS country VARCHAR(100);
+ALTER TABLE click_logs ADD COLUMN IF NOT EXISTS device VARCHAR(50);
+ALTER TABLE click_logs ADD COLUMN IF NOT EXISTS browser VARCHAR(100);
+
 -- TRIGGER FUNCTION
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

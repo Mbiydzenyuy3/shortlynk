@@ -2,6 +2,8 @@
 import { pool } from "../config/db.js";
 import generateShortCode from "../utils/shortCodeGen.js";
 import { checkUrlSafety } from "../utils/safeBrowsing.js";
+import geoip from "geoip-lite";
+import UAParser from "ua-parser-js";
 
 export const createShortUrlService = async ({
   longUrl,
@@ -100,7 +102,7 @@ export const getUrlStatsService = async (shortCode, userId) => {
   return { ...url, short_url: shortUrl };
 };
 
-export const handleRedirectService = async (shortCode) => {
+export const handleRedirectService = async (shortCode, req) => {
   const result = await pool.query(
     `SELECT id, long_url, expire_at, click_count FROM urls WHERE short_code = $1`,
     [shortCode]
@@ -111,12 +113,105 @@ export const handleRedirectService = async (shortCode) => {
   if (expire_at && new Date() > new Date(expire_at))
     return { status: "expired" };
 
+  // Extract click source metadata
+  let referrer = 'Direct';
+  let country = 'Unknown';
+  let device = 'Unknown';
+  let browser = 'Unknown';
+
+  try {
+    const rawReferer = req.get('Referer') || req.get('Referrer') || '';
+    if (rawReferer) {
+      try {
+        const refUrl = new URL(rawReferer);
+        referrer = refUrl.hostname || 'Direct';
+      } catch {
+        referrer = rawReferer.slice(0, 200);
+      }
+    }
+
+    // Country from IP
+    const forwarded = req.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0].trim() : req.ip;
+    const cleanIp = ip?.replace('::ffff:', '');
+    const geo = geoip.lookup(cleanIp);
+    if (geo && geo.country) {
+      country = geo.country;
+    }
+
+    // Device and browser from User-Agent
+    const ua = req.get('User-Agent') || '';
+    const parser = new UAParser(ua);
+    const parsedDevice = parser.getDevice();
+    const parsedBrowser = parser.getBrowser();
+    device = parsedDevice.type || 'Desktop';
+    // Capitalize first letter
+    device = device.charAt(0).toUpperCase() + device.slice(1);
+    browser = parsedBrowser.name || 'Unknown';
+  } catch {
+    // Silently continue with defaults if parsing fails
+  }
+
   // Update click count
   await pool.query(
     `UPDATE urls SET click_count = click_count + 1 WHERE id = $1`,
     [id]
   );
-  await pool.query(`INSERT INTO click_logs (url_id) VALUES ($1)`, [id]);
+  await pool.query(
+    `INSERT INTO click_logs (url_id, referrer, country, device, browser) VALUES ($1, $2, $3, $4, $5)`,
+    [id, referrer, country, device, browser]
+  );
 
   return { status: "ok", redirectTo: long_url, clicks: click_count + 1 };
 };
+
+export const getClickSourcesService = async (shortCode, userId) => {
+  // Verify URL belongs to the user
+  const urlResult = await pool.query(
+    `SELECT id FROM urls WHERE short_code = $1 AND user_id = $2`,
+    [shortCode, userId]
+  );
+  if (urlResult.rowCount === 0) return null;
+
+  const urlId = urlResult.rows[0].id;
+
+  // Aggregate referrers
+  const referrers = await pool.query(
+    `SELECT referrer AS name, COUNT(*)::int AS count
+     FROM click_logs WHERE url_id = $1 AND referrer IS NOT NULL
+     GROUP BY referrer ORDER BY count DESC LIMIT 10`,
+    [urlId]
+  );
+
+  // Aggregate countries
+  const countries = await pool.query(
+    `SELECT country AS name, COUNT(*)::int AS count
+     FROM click_logs WHERE url_id = $1 AND country IS NOT NULL
+     GROUP BY country ORDER BY count DESC LIMIT 10`,
+    [urlId]
+  );
+
+  // Aggregate devices
+  const devices = await pool.query(
+    `SELECT device AS name, COUNT(*)::int AS count
+     FROM click_logs WHERE url_id = $1 AND device IS NOT NULL
+     GROUP BY device ORDER BY count DESC LIMIT 10`,
+    [urlId]
+  );
+
+  // Aggregate browsers
+  const browsers = await pool.query(
+    `SELECT browser AS name, COUNT(*)::int AS count
+     FROM click_logs WHERE url_id = $1 AND browser IS NOT NULL
+     GROUP BY browser ORDER BY count DESC LIMIT 10`,
+    [urlId]
+  );
+
+  return {
+    referrers: referrers.rows,
+    countries: countries.rows,
+    devices: devices.rows,
+    browsers: browsers.rows,
+  };
+};
+

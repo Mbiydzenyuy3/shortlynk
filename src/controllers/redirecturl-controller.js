@@ -1,11 +1,11 @@
-import { handleRedirectService, getUrlStatsService } from "../services/urls.service.js";
+import { handleRedirectService, getUrlStatsService, getClickSourcesService } from "../services/urls.service.js";
 import { logInfo, logError } from "../utils/logger.js";
 
 const getRedirectUrl = async (req, res) => {
   const { shortCode } = req.params;
 
   try {
-    const result = await handleRedirectService(shortCode);
+    const result = await handleRedirectService(shortCode, req);
 
     if (result.status === "not_found") {
       return res.status(404).json({ message: "Short URL not found" });
@@ -40,4 +40,17 @@ const getUrlStats = async (req, res) => {
   }
 };
 
-export { getRedirectUrl, getUrlStats };
+const getClickSources = async (req, res) => {
+  try {
+    const sources = await getClickSourcesService(req.params.shortCode, req.user.id);
+    if (!sources) {
+      return res.status(404).json({ message: "URL not found or unauthorized" });
+    }
+    res.status(200).json({ success: true, data: sources });
+  } catch (err) {
+    logError("Failed to get click sources", err);
+    res.status(500).json({ message: "Failed to retrieve click sources" });
+  }
+};
+
+export { getRedirectUrl, getUrlStats, getClickSources };
