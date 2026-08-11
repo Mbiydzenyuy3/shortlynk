@@ -298,11 +298,24 @@ After writing output, assert for **every** manifest route that the emitted file 
 
 ---
 
+## 8. Operational Setup (not code, but required)
+
+None of the above is measurable without this, and it is a prerequisite for knowing whether §5 or §6 did anything.
+
+1. **Google Search Console** — verify `shortlynk.store` via DNS TXT record, submit `sitemap.xml`, and confirm the app routes report as excluded-by-robots rather than as errors.
+2. **Bing Webmaster Tools** — import the Search Console property; costs one click and covers ChatGPT search, which sources from Bing.
+3. **Baseline before shipping §5/§6** — record indexed page count and impressions at launch. Without a baseline the question "did the use-case pages work?" is unanswerable, and per the Strategic Rationale, the answer to that question governs whether the 20-page cap is ever revisited.
+
+Re-check indexed count and impressions 8 weeks after §6 ships. If the use-case pages have not earned impressions by then, the correct response is to stop, not to add more.
+
+---
+
 ## Implementation Order
 
 1. §1 rendering + §2 manifest + §3 foundation — the unambiguous, highest-confidence work
 2. §4 backend robots hygiene — two lines
 3. §5 tool pages — the one real traffic bet
 4. §6 use-case pages — optional; skip without consequence if scope tightens
+5. §8 operational setup — do the Search Console half before §5 ships, so a baseline exists
 
 Sections 1–4 are independently valuable and ship on their own. Nothing in 5 or 6 blocks them.
