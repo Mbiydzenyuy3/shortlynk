@@ -98,8 +98,8 @@ describe('Register page', () => {
     });
   });
 
-  it('navigates to /login on successful registration', async () => {
-    apiFetch.mockResolvedValueOnce({});
+  it('stores the token and goes to the dashboard on successful registration', async () => {
+    apiFetch.mockResolvedValueOnce({ token: 'fake-jwt' });
     renderRegister();
 
     fireEvent.change(screen.getByPlaceholderText(/yourname/i), { target: { value: 'testuser' } });
@@ -108,8 +108,9 @@ describe('Register page', () => {
     fireEvent.click(screen.getByRole('button', { name: /create account/i }));
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/login');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
     });
+    expect(localStorage.getItem('token')).toBe('fake-jwt');
   });
 
   it('shows inline error message on failed registration', async () => {

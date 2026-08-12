@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
@@ -17,10 +18,20 @@ describe('Navbar', () => {
     expect(screen.getByText('Get Started')).toBeInTheDocument();
   });
 
-  it('shows Logout when authenticated', () => {
+  it('hides Login and shows the account menu when authenticated', () => {
     renderNav({ variant: 'light', isAuthenticated: true });
-    expect(screen.getByText('Logout')).toBeInTheDocument();
     expect(screen.queryByText('Login')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Account/ })).toBeInTheDocument();
+  });
+
+  it('shows Logout once the account menu is opened', async () => {
+    const user = userEvent.setup();
+    renderNav({ variant: 'light', isAuthenticated: true });
+
+    // Logout lives inside the dropdown, which is closed until clicked.
+    expect(screen.queryByText('Logout')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Account/ }));
+    expect(screen.getByText('Logout')).toBeInTheDocument();
   });
 
   it('applies dark class when variant is dark', () => {
