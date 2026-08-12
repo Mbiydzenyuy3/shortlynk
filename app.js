@@ -64,6 +64,12 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
+// This host serves the API and short-link redirects only — it must never be
+// indexed. The marketing site has its own robots.txt in frontend/public.
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send('User-agent: *\nDisallow: /\n')
+})
+
 //API Routes
 app.use('/', indexRouter)
 app.use('/api/oauth', authRouter)

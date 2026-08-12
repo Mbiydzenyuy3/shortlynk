@@ -28,7 +28,15 @@ const router = express.Router()
  *         description: URL not found
  */
 
-router.get('/:shortCode', getRedirectUrl)
+router.get(
+  '/:shortCode',
+  (req, res, next) => {
+    // Short links must not be indexed, even where robots.txt is not consulted.
+    res.set('X-Robots-Tag', 'noindex')
+    next()
+  },
+  getRedirectUrl
+)
 
 /**
  * @swagger
