@@ -5,7 +5,11 @@ import HeroInput from '../components/HeroInput';
 import Seo from '../components/Seo';
 import { marketingRoutes } from '../seo/routes';
 
-const isAuthenticated = !!localStorage.getItem('token');
+// Guarded: this module is also imported by the prerenderer, where there is
+// no localStorage. Prerendered output is always the logged-out view, which
+// the client corrects on hydration.
+const isAuthenticated =
+  typeof localStorage !== 'undefined' && !!localStorage.getItem('token');
 
 const HOME = marketingRoutes.find(r => r.path === '/');
 
