@@ -64,7 +64,7 @@ Stay on Vite. Use Vite's documented SSR primitives directly rather than a preren
 
 | File | Purpose |
 |---|---|
-| `frontend/src/entry-server.jsx` | Renders `<App>` inside `StaticRouter` for a given URL; returns `{ html, helmetContext }` |
+| `frontend/src/entry-server.jsx` | Renders `<AppRoutes>` inside `StaticRouter` for a given URL; returns the HTML string, metadata first |
 | `frontend/scripts/prerender.js` | Post-build Node script: renders each manifest route, injects head tags, writes `dist/<route>/index.html`, then emits `sitemap.xml` |
 
 ### Changes to existing files
@@ -89,8 +89,14 @@ Marketing pages then ship only their own JS. This addresses prerendering's one g
 
 ### New dependencies
 
-- `react-helmet-async` (runtime)
 - `qrcode` (runtime, §5 only)
+
+**No head-management library.** `react-helmet-async@3` disables its own context
+API when it detects React 19 and defers to React's native metadata hoisting, so
+the dependency buys nothing. React 19 hoists `<title>`, `<meta>` and `<link>`
+into `<head>` on the client, and emits them at the front of the `renderToString`
+output on the server, where the prerender script lifts them into `<head>`.
+JSON-LD is not hoisted and renders inline, which search engines accept.
 
 ---
 
@@ -126,7 +132,7 @@ This file has **three consumers**: `scripts/prerender.js`, the sitemap generator
 
 ### `frontend/src/components/Seo.jsx`
 
-One wrapper over `react-helmet-async`. Every page uses it; no page hand-writes head tags.
+One component rendering plain `<title>`, `<meta>` and `<link>` elements, which React 19 hoists into `<head>`. Every page uses it; no page hand-writes head tags.
 
 ```jsx
 <Seo
