@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { apiFetch } from '../api';
 import AuthLayout from '../components/AuthLayout';
+import Seo from '../components/Seo';
 
 export default function Register() {
   const GOOGLE_OAUTH_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/oauth/google`;
@@ -35,6 +36,8 @@ export default function Register() {
   };
 
   return (
+    <>
+    <Seo title="Create Account — Shortlynk" description="Create a free Shortlynk account." noindex />
     <AuthLayout
       title="Create account"
       subtitle="Start shortening links in seconds"
@@ -148,5 +151,6 @@ export default function Register() {
         */}
       </form>
     </AuthLayout>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Seo from '../components/Seo';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -17,5 +18,10 @@ export default function OAuthCallback() {
     }
   }, [location, navigate]);
 
-  return <p>Processing login with Google...</p>;
+  return (
+    <>
+      <Seo title="Signing In — Shortlynk" description="Completing sign-in." noindex />
+      <p>Processing login with Google...</p>
+    </>
+  );
 }

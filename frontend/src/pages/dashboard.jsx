@@ -4,6 +4,7 @@ import { apiFetch } from '../api';
 import Navbar from '../components/Navbar';
 import ShortenBar from '../components/ShortenBar';
 import LinkTable from '../components/LinkTable';
+import Seo from '../components/Seo';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-surface)' }}>
+      <Seo title="Dashboard — Shortlynk" description="Manage your short links and view click analytics." noindex />
       <Navbar variant="light" isAuthenticated={true} />
       <main className="responsive-pad" style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
         <ShortenBar onShortened={fetchUrls} />

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { apiFetch } from '../api';
 import AuthLayout from '../components/AuthLayout';
+import Seo from '../components/Seo';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -36,6 +37,8 @@ export default function Login() {
   };
 
   return (
+    <>
+    <Seo title="Log In — Shortlynk" description="Log in to your Shortlynk account." noindex />
     <AuthLayout
       title="Welcome back"
       subtitle="Sign in to your account"
@@ -130,5 +133,6 @@ export default function Login() {
         */}
       </form>
     </AuthLayout>
+    </>
   );
 }

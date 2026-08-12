@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../api';
 import Navbar from '../components/Navbar';
 import LinkTable from '../components/LinkTable';
+import Seo from '../components/Seo';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -74,6 +75,7 @@ export default function UrlListPage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-surface)' }}>
+      <Seo title="Your Links — Shortlynk" description="Every short link you have created." noindex />
       <Navbar variant="light" isAuthenticated={true} />
 
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>

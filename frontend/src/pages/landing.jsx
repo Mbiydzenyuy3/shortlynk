@@ -2,8 +2,30 @@ import { Link2, BarChart2, ShieldCheck } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HeroInput from '../components/HeroInput';
+import Seo from '../components/Seo';
+import { marketingRoutes } from '../seo/routes';
 
 const isAuthenticated = !!localStorage.getItem('token');
+
+const HOME = marketingRoutes.find(r => r.path === '/');
+
+const LANDING_JSONLD = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Shortlynk',
+    applicationCategory: 'WebApplication',
+    operatingSystem: 'Any',
+    url: 'https://shortlynk.store',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Shortlynk',
+    url: 'https://shortlynk.store',
+  },
+];
 
 const FEATURES = [
   {
@@ -38,6 +60,12 @@ const STEPS = [
 export default function LandingPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Seo
+        title={HOME.title}
+        description={HOME.description}
+        canonical="/"
+        jsonLd={LANDING_JSONLD}
+      />
       <Navbar variant="dark" isAuthenticated={isAuthenticated} />
 
       {/* ── Hero ── */}
