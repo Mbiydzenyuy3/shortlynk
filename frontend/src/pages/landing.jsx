@@ -1,4 +1,4 @@
-import { Link2, BarChart2, ShieldCheck } from 'lucide-react';
+import { Link2, BarChart2, ShieldCheck, Check } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HeroInput from '../components/HeroInput';
@@ -45,10 +45,10 @@ const FEATURES = [
   },
 ];
 
-const STATS = [
-  { number: '10M+', label: 'Links Created' },
-  { number: '99.9%', label: 'Uptime' },
-  { number: '< 50ms', label: 'Redirect Speed' },
+const TRUST = [
+  'No account needed to try',
+  'Free — no credit card',
+  'Spam-filtered links',
 ];
 
 const STEPS = [
@@ -89,13 +89,14 @@ export default function LandingPage() {
               fontSize: 'clamp(36px, 6vw, 64px)',
               fontWeight: 700,
               lineHeight: 1.15,
-              marginBottom: '16px',
+              marginBottom: '20px',
             }}
           >
-            Shorten. Share. Track.
+            Short links that tell you who clicked
           </h1>
-          <p style={{ color: 'var(--color-text-muted-dark)', fontSize: '18px', lineHeight: 1.6, marginBottom: '40px' }}>
-            Turn long, ugly URLs into powerful short links you can manage and measure.
+          <p style={{ color: 'var(--color-text-muted-dark)', fontSize: '18px', lineHeight: 1.6, marginBottom: '36px' }}>
+            Paste a long URL, get a short one instantly — then see every click by
+            country, device and referrer. Free, and no account needed to start.
           </p>
           <HeroInput />
           <p style={{ color: 'var(--color-text-muted-dark)', fontSize: '13px', marginTop: '12px' }}>
@@ -103,24 +104,33 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Stats row */}
+        {/* Trust row */}
         <div
           style={{
             display: 'flex',
-            gap: '48px',
+            gap: '32px',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            marginTop: '32px',
+            marginTop: '40px',
             paddingTop: '32px',
             borderTop: '1px solid rgba(255,255,255,0.08)',
             width: '100%',
             maxWidth: '640px',
           }}
         >
-          {STATS.map(({ number, label }) => (
-            <div key={label} style={{ textAlign: 'center' }}>
-              <div style={{ color: 'var(--color-text-on-dark)', fontSize: '28px', fontWeight: 700 }}>{number}</div>
-              <div style={{ color: 'var(--color-text-muted-dark)', fontSize: '13px', marginTop: '4px' }}>{label}</div>
+          {TRUST.map(label => (
+            <div
+              key={label}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'var(--color-text-muted-dark)',
+                fontSize: '14px',
+              }}
+            >
+              <Check size={16} color="var(--color-yellow)" />
+              {label}
             </div>
           ))}
         </div>
@@ -129,9 +139,10 @@ export default function LandingPage() {
       {/* ── Features ── */}
       <section id="features" className="responsive-section-pad" style={{ backgroundColor: 'var(--color-white)' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', fontSize: '36px', fontWeight: 700, marginBottom: '56px' }}>
-            Everything you need to share smarter
-          </h2>
+          <h2 className="section-heading">Everything you need to share smarter</h2>
+          <p className="section-subheading">
+            Every link comes with analytics built in. No setup, no tracking code, no extra tools.
+          </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
             {FEATURES.map(({ icon, title, desc }) => (
               <div
@@ -174,19 +185,20 @@ export default function LandingPage() {
       {/* ── How It Works ── */}
       <section className="responsive-section-pad" style={{ backgroundColor: 'var(--color-surface)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', fontSize: '36px', fontWeight: 700, marginBottom: '56px' }}>
-            Up and running in seconds
-          </h2>
+          <h2 className="section-heading">Up and running in seconds</h2>
+          <p className="section-subheading">
+            Three steps from a long URL to a short link you can measure.
+          </p>
           <div style={{ display: 'flex', gap: '0', position: 'relative', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {STEPS.map(({ n, title, desc }, i) => (
+            {STEPS.map(({ n, title, desc }) => (
               <div
                 key={n}
+                className="step-card"
                 style={{
                   flex: '1 1 220px',
                   maxWidth: '280px',
                   textAlign: 'center',
                   padding: '0 24px',
-                  borderRight: i < STEPS.length - 1 ? '2px dashed var(--color-border)' : 'none',
                 }}
               >
                 <div
@@ -217,10 +229,26 @@ export default function LandingPage() {
         }}
         className="responsive-section-pad"
       >
-        <h2 style={{ color: 'var(--color-text-on-dark)', fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>
+        <h2
+          style={{
+            color: 'var(--color-text-on-dark)',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: 700,
+            lineHeight: 1.2,
+            marginBottom: '16px',
+          }}
+        >
           Start shortening for free
         </h2>
-        <p style={{ color: 'var(--color-text-muted-dark)', marginBottom: '32px', fontSize: '16px' }}>
+        <p
+          style={{
+            color: 'var(--color-text-muted-dark)',
+            fontSize: '17px',
+            lineHeight: 1.6,
+            maxWidth: '480px',
+            margin: '0 auto 36px',
+          }}
+        >
           No credit card required. No account needed to try.
         </p>
         <a href="/register">

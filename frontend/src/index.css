@@ -105,6 +105,52 @@ body {
 }
 .input-field.input-field--error { border-color: var(--color-error); }
 
+/* Section rhythm.
+   These were previously declared only inside the max-width:768px block, which
+   left every landing section with zero padding on desktop. The mobile
+   overrides further down narrow them again for small screens. */
+.responsive-section-pad {
+  padding: 112px 32px;
+}
+
+.responsive-pad {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* Shared heading rhythm for landing sections. */
+.section-heading {
+  text-align: center;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.section-subheading {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto 64px;
+}
+
+/* Dashed separators between "how it works" steps: vertical on wide screens,
+   horizontal once the steps wrap. */
+.step-card + .step-card {
+  border-left: 2px dashed var(--color-border);
+}
+
+@media (max-width: 768px) {
+  .step-card + .step-card {
+    border-left: none;
+    border-top: 2px dashed var(--color-border);
+    padding-top: 32px;
+    margin-top: 32px;
+  }
+}
+
 @media (max-width: 768px) {
   .auth-panel-left { display: none !important; }
   

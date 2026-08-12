@@ -30,13 +30,13 @@ describe('LandingPage', () => {
 
   it('renders the hero headline', () => {
     renderLanding();
-    expect(screen.getByText('Shorten. Share. Track.')).toBeInTheDocument();
+    expect(screen.getByText('Short links that tell you who clicked')).toBeInTheDocument();
   });
 
   it('renders the hero sub-text', () => {
     renderLanding();
     expect(
-      screen.getByText(/Turn long, ugly URLs into powerful short links/i)
+      screen.getByText(/Paste a long URL, get a short one instantly/i)
     ).toBeInTheDocument();
   });
 
@@ -45,11 +45,17 @@ describe('LandingPage', () => {
     expect(screen.getByTestId('hero-input')).toBeInTheDocument();
   });
 
-  it('renders the stats row with correct numbers', () => {
+  it('renders the trust row', () => {
     renderLanding();
-    expect(screen.getByText('10M+')).toBeInTheDocument();
-    expect(screen.getByText('99.9%')).toBeInTheDocument();
-    expect(screen.getByText('< 50ms')).toBeInTheDocument();
+    expect(screen.getByText('No account needed to try')).toBeInTheDocument();
+    expect(screen.getByText('Free — no credit card')).toBeInTheDocument();
+    expect(screen.getByText('Spam-filtered links')).toBeInTheDocument();
+  });
+
+  it('makes no unverifiable usage claims', () => {
+    const { container } = renderLanding();
+    // These were fabricated metrics; they must not come back.
+    expect(container.textContent).not.toMatch(/10M\+|99\.9%|< ?50ms/);
   });
 
   it('renders the Features section heading', () => {
