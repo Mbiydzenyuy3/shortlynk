@@ -13,6 +13,10 @@
     "transform": {},
     "setupFilesAfterEnv": [
       "./src/tests/jest.setup.cjs"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/frontend/"
     ]
   },
   "keywords": [],
