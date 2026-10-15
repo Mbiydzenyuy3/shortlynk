@@ -10,3 +10,6 @@
 
 # Auth storage state
 /storage-state.json
+
+# Test credentials (regenerated at runtime by global.setup.ts)
+/.test-credentials.json

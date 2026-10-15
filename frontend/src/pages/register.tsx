@@ -5,6 +5,8 @@ import { apiFetch } from '../api';
 import AuthLayout from '../components/AuthLayout';
 import Seo from '../components/Seo';
 
+const GOOGLE_OAUTH_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/oauth/google`;
+
 interface RegisterForm {
   username: string;
   email: string;
@@ -139,6 +141,22 @@ export default function Register() {
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
+
+        {/* Google OAuth — temporarily disabled until OAuth is fully configured
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border)' }} />
+          <span style={{ fontSize: '12px', color: 'var(--color-muted)' }}>OR</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border)' }} />
+        </div>
+        <button
+          type="button"
+          className="btn btn--secondary"
+          style={{ width: '100%', height: '48px', fontSize: '15px', justifyContent: 'center' }}
+          onClick={() => { window.location.href = GOOGLE_OAUTH_URL; }}
+        >
+          Continue with Google
+        </button>
+        */}
       </form>
     </AuthLayout>
     </>

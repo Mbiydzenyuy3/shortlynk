@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link2, BarChart2, ShieldCheck, Check } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -62,14 +62,13 @@ const STEPS = [
   { n: 3, title: 'Share & Track', desc: "Copy it anywhere. Sign up to see who's clicking." },
 ];
 
-export default function LandingPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+// Guarded: this module is also imported by the prerenderer, where there is
+// no localStorage. Prerendered output is always the logged-out view, which
+// the client corrects on hydration.
+const isAuthenticated =
+  typeof localStorage !== 'undefined' && !!localStorage.getItem('token');
 
-  useEffect(() => {
-    setIsAuthenticated(
-      typeof localStorage !== 'undefined' && !!localStorage.getItem('token')
-    );
-  }, []);
+export default function LandingPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

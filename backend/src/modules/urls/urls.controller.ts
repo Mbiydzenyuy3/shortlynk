@@ -1,9 +1,10 @@
 import type { Request, Response } from 'express';
 import * as UrlService from './urls.service.js';
 import type { AuthenticatedRequest } from '../../shared/types/index.js';
+import type { ShortenUrlInput, GuestShortenInput, UpdateUrlInput } from './urls.validator.js';
 
 export async function createShortUrl(req: Request, res: Response): Promise<void> {
-  const { longUrl, shortCode, expiresAt } = req.body;
+  const { longUrl, shortCode, expiresAt } = req.body as ShortenUrlInput;
   const userId = (req as AuthenticatedRequest).user.id;
 
   const result = await UrlService.createShortUrl({
@@ -20,7 +21,7 @@ export async function createShortUrl(req: Request, res: Response): Promise<void>
 }
 
 export async function createGuestShortUrl(req: Request, res: Response): Promise<void> {
-  const { longUrl } = req.body;
+  const { longUrl } = req.body as GuestShortenInput;
 
   const result = await UrlService.createShortUrl({
     longUrl,
@@ -43,7 +44,7 @@ export async function getUserUrls(req: Request, res: Response): Promise<void> {
 
 export async function updateUrl(req: Request, res: Response): Promise<void> {
   const shortCode = req.params.shortCode as string;
-  const { expireAt } = req.body;
+  const { expireAt } = req.body as UpdateUrlInput;
   const userId = (req as AuthenticatedRequest).user.id;
 
   const result = await UrlService.updateUrlExpiry(shortCode, userId, expireAt ?? null);
