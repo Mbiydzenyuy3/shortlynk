@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
 import * as AuthService from './auth.service.js';
 import { config } from '../../config/index.js';
-import prisma from '../../shared/prisma.js';
 import logger from '../../shared/utils/logger.js';
 import type { AuthenticatedRequest } from '../../shared/types/index.js';
 
@@ -91,25 +90,9 @@ export async function googleAuthCallback(req: Request, res: Response): Promise<v
     return;
   }
 
-  let user = await prisma.user.findUnique({ where: { email: userInfo.email } });
+  const jwtToken = await AuthService.findOrCreateOAuthUser(userInfo.email, userInfo.name);
 
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        email: userInfo.email,
-        username: userInfo.name ?? userInfo.email.split('@')[0],
-        password: null,  // OAuth users have no password
-      },
-    });
-  }
-
-  const jwtToken = jwt.sign(
-    { sub: user.id, email: user.email, username: user.username },
-    config.JWT_SECRET,
-    { expiresIn: config.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
-  );
-
-  logger.info({ email: user.email }, 'Google OAuth successful');
+  logger.info({ email: userInfo.email }, 'Google OAuth successful');
 
   const redirectUrl = `${config.FRONTEND_URL}/oauth/callback?token=${jwtToken}`;
   res.redirect(redirectUrl);

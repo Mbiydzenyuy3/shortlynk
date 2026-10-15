@@ -34,6 +34,20 @@ export async function registerUser({ username, email, password }: RegisterInput)
   };
 }
 
+export async function findOrCreateOAuthUser(email: string, name?: string | null): Promise<string> {
+  let user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email,
+        username: name ?? email.split('@')[0],
+        password: null,
+      },
+    });
+  }
+  return generateToken(user);
+}
+
 export async function loginUser({ email, password }: LoginInput) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.password) {
