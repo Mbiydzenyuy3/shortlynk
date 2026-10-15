@@ -28,7 +28,7 @@ export default function Footer() {
       </p>
 
       <span style={{ color: 'var(--color-text-muted-dark)', fontSize: '13px', marginTop: '4px' }}>
-        © {new Date().getFullYear()} Shortlynk
+        &copy; {new Date().getFullYear()} Shortlynk
       </span>
     </footer>
   );

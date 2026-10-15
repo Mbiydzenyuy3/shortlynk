@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import LinkRow from './LinkRow';
 import SkeletonRow from './SkeletonRow';
 import EmptyState from './EmptyState';
+import type { UrlItem } from '../types';
 
 const PAGE_SIZE = 20;
 
-function pageButtonStyle(active) {
+function pageButtonStyle(active: boolean): React.CSSProperties {
   return {
     minWidth: '32px',
     height: '32px',
@@ -20,7 +21,7 @@ function pageButtonStyle(active) {
   };
 }
 
-const thStyle = {
+const thStyle: React.CSSProperties = {
   padding: '0 16px',
   textAlign: 'left',
   fontSize: '11px',
@@ -30,7 +31,14 @@ const thStyle = {
   textTransform: 'uppercase',
 };
 
-export default function LinkTable({ urls, loading, onDelete, onEdit }) {
+interface LinkTableProps {
+  urls: UrlItem[];
+  loading: boolean;
+  onDelete: (shortCode: string) => Promise<void>;
+  onEdit: (shortCode: string, expireAt: string | null) => Promise<void>;
+}
+
+export default function LinkTable({ urls, loading, onDelete, onEdit }: LinkTableProps) {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -79,7 +87,7 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
           style={{ width: '240px', height: '36px' }}
           placeholder="Search or filter..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
         />
       </div>
 
@@ -146,7 +154,7 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
             disabled={currentPage === 1}
             style={pageButtonStyle(false)}
           >
-            ‹
+            &#8249;
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button key={p} onClick={() => setCurrentPage(p)} style={pageButtonStyle(p === currentPage)}>
@@ -158,7 +166,7 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }) {
             disabled={currentPage === totalPages}
             style={pageButtonStyle(false)}
           >
-            ›
+            &#8250;
           </button>
         </div>
       )}

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
-const renderNav = (props) =>
+const renderNav = (props: { variant?: 'dark' | 'light'; isAuthenticated?: boolean } = {}) =>
   render(<MemoryRouter><Navbar {...props} /></MemoryRouter>);
 
 describe('Navbar', () => {
@@ -28,7 +28,6 @@ describe('Navbar', () => {
     const user = userEvent.setup();
     renderNav({ variant: 'light', isAuthenticated: true });
 
-    // Logout lives inside the dropdown, which is closed until clicked.
     expect(screen.queryByText('Logout')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Account/ }));
     expect(screen.getByText('Logout')).toBeInTheDocument();

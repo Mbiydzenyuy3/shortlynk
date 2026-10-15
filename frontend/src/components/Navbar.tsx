@@ -1,30 +1,39 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link2, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
-function getUserFromToken() {
+interface UserInfo {
+  username: string;
+}
+
+function getUserFromToken(): UserInfo | null {
   try {
     const token = localStorage.getItem('token');
     if (!token) return null;
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return { username: payload.username || payload.email || 'Account' };
+    const payload = JSON.parse(atob(token.split('.')[1])) as Record<string, unknown>;
+    return { username: (payload.username as string) || (payload.email as string) || 'Account' };
   } catch {
     return null;
   }
 }
 
-export default function Navbar({ variant = 'dark', isAuthenticated = false }) {
+interface NavbarProps {
+  variant?: 'dark' | 'light';
+  isAuthenticated?: boolean;
+}
+
+export default function Navbar({ variant = 'dark', isAuthenticated = false }: NavbarProps) {
   const navigate = useNavigate();
   const isDark = variant === 'dark';
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const user = isAuthenticated ? getUserFromToken() : null;
   const username = user?.username || 'Account';
   const initials = username.slice(0, 2).toUpperCase();
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
     }
@@ -38,7 +47,7 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }) {
     navigate('/');
   };
 
-  const dropdownItem = {
+  const dropdownItem: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: '8px',
     width: '100%', padding: '10px 16px',
     background: 'none', border: 'none', cursor: 'pointer',
@@ -129,8 +138,8 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }) {
                   <button
                     onClick={() => { setDropdownOpen(false); navigate('/dashboard'); }}
                     style={dropdownItem}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-surface)'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = 'var(--color-surface)'; }}
+                    onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     <LayoutDashboard size={14} color="var(--color-text-secondary)" />
                     Dashboard
@@ -139,8 +148,8 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }) {
                   <button
                     onClick={handleLogout}
                     style={{ ...dropdownItem, color: 'var(--color-error)' }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#FEF2F2'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#FEF2F2'; }}
+                    onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     <LogOut size={14} />
                     Logout

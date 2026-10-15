@@ -1,9 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import LinkTable from '../LinkTable';
+import type { UrlItem } from '../../types';
 
 vi.mock('../LinkRow', () => ({
-  default: ({ url, onDelete, onEdit }) => (
+  default: ({ url, onDelete }: { url: UrlItem; onDelete: (code: string) => void; onEdit: (code: string, expireAt: string | null) => void }) => (
     <tr data-testid="link-row">
       <td>{url.short_code}</td>
       <td>{url.short_url}</td>
@@ -14,17 +15,19 @@ vi.mock('../LinkRow', () => ({
   ),
 }));
 
-const makeUrls = (n) =>
+const makeUrls = (n: number): UrlItem[] =>
   Array.from({ length: n }, (_, i) => ({
+    id: String(i),
     short_code: `code${i}`,
     short_url: `https://shrt.ly/code${i}`,
     long_url: `https://example.com/page/${i}`,
     click_count: i,
     created_at: new Date().toISOString(),
     expire_at: null,
+    updated_at: new Date().toISOString(),
   }));
 
-const noop = () => {};
+const noop = vi.fn();
 
 test('renders column headers', () => {
   render(<LinkTable urls={[]} loading={false} onDelete={noop} onEdit={noop} />);
@@ -81,15 +84,11 @@ test('resets to page 1 when urls shrink below current page', () => {
   const { rerender } = render(
     <LinkTable urls={makeUrls(25)} loading={false} onDelete={noop} onEdit={noop} />
   );
-  // Navigate to page 2 — use getAllByText since table rows also contain "2"
   const pageTwoBtns = screen.getAllByRole('button', { name: '2' });
   fireEvent.click(pageTwoBtns[0]);
   expect(screen.getByText('›')).toBeInTheDocument();
 
-  // Simulate delete bringing count to 20 (totalPages drops to 1)
   rerender(<LinkTable urls={makeUrls(20)} loading={false} onDelete={noop} onEdit={noop} />);
-  // Pagination should be gone (totalPages === 1)
   expect(screen.queryByText('›')).not.toBeInTheDocument();
-  // All 20 items visible (no blank table)
   expect(screen.getByText('(20)')).toBeInTheDocument();
 });

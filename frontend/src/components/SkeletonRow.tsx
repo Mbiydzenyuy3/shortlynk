@@ -1,5 +1,5 @@
 export default function SkeletonRow() {
-  const cell = (width) => (
+  const cell = (width: string) => (
     <td style={{ padding: '0 16px', verticalAlign: 'middle' }}>
       <div className="skeleton" style={{ height: '14px', width, borderRadius: '4px' }} />
     </td>

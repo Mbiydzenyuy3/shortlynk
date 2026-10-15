@@ -24,8 +24,8 @@ describe('Footer', () => {
   it('is laid out as a single centered column', () => {
     const { container } = renderFooter();
     const footer = container.querySelector('footer');
-    expect(footer.style.flexDirection).toBe('column');
-    expect(footer.style.alignItems).toBe('center');
-    expect(footer.style.textAlign).toBe('center');
+    expect(footer!.style.flexDirection).toBe('column');
+    expect(footer!.style.alignItems).toBe('center');
+    expect(footer!.style.textAlign).toBe('center');
   });
 });

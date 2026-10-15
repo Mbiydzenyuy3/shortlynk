@@ -1,6 +1,13 @@
 import { Link2 } from 'lucide-react';
 
-export default function EmptyState({ message, subtext, ctaText, ctaHref }) {
+interface EmptyStateProps {
+  message: string;
+  subtext?: string;
+  ctaText?: string;
+  ctaHref?: string;
+}
+
+export default function EmptyState({ message, subtext, ctaText, ctaHref }: EmptyStateProps) {
   return (
     <div
       style={{

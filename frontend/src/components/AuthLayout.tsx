@@ -1,6 +1,15 @@
+import React from 'react';
 import { Link2 } from 'lucide-react';
 
-export default function AuthLayout({ children, title, subtitle, toggleText, toggleHref }) {
+interface AuthLayoutProps {
+  children: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  toggleText: string;
+  toggleHref: string;
+}
+
+export default function AuthLayout({ children, title, subtitle, toggleText, toggleHref }: AuthLayoutProps) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Left dark panel */}

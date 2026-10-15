@@ -2,9 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import Seo, { SITE_URL } from '../components/Seo';
 
-// Assert on the server-rendered string: this is exactly what the prerender
-// script consumes, so testing it here also guards the prerender pipeline.
-function renderSeo(props) {
+function renderSeo(props: { title: string; description: string; canonical?: string; ogImage?: string; noindex?: boolean; jsonLd?: Record<string, unknown> | Record<string, unknown>[] }) {
   return renderToString(<Seo {...props} />);
 }
 
@@ -57,7 +55,6 @@ describe('Seo', () => {
   });
 
   it('hoists metadata ahead of page markup for the prerenderer', () => {
-    // React 19 emits hoistable tags first; prerender.js relies on this.
     const html = renderToString(
       <div>
         <Seo title="Hoisted" description="D" />

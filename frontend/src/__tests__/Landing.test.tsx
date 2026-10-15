@@ -23,7 +23,6 @@ const renderLanding = () =>
 describe('LandingPage', () => {
   it('renders the Navbar with dark variant', () => {
     renderLanding();
-    // Navbar dark class is applied
     const nav = document.querySelector('nav.navbar--dark');
     expect(nav).toBeInTheDocument();
   });
@@ -54,7 +53,6 @@ describe('LandingPage', () => {
 
   it('makes no unverifiable usage claims', () => {
     const { container } = renderLanding();
-    // These were fabricated metrics; they must not come back.
     expect(container.textContent).not.toMatch(/10M\+|99\.9%|< ?50ms/);
   });
 
@@ -98,13 +96,10 @@ describe('LandingPage', () => {
 
   it('renders the Footer', () => {
     renderLanding();
-    // Footer has the copyright text with year
     expect(screen.getByText(/© \d{4} Shortlynk/i)).toBeInTheDocument();
   });
 
   it('does not import LandingHeader (deleted component)', () => {
-    // If LandingHeader were imported and rendered, it would throw since it doesn't exist.
-    // This test confirms rendering succeeds without errors.
     expect(() => renderLanding()).not.toThrow();
   });
 });

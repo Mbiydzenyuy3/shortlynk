@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Link2, BarChart2, ShieldCheck, Check } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -5,13 +6,7 @@ import HeroInput from '../components/HeroInput';
 import Seo from '../components/Seo';
 import { marketingRoutes } from '../seo/routes';
 
-// Guarded: this module is also imported by the prerenderer, where there is
-// no localStorage. Prerendered output is always the logged-out view, which
-// the client corrects on hydration.
-const isAuthenticated =
-  typeof localStorage !== 'undefined' && !!localStorage.getItem('token');
-
-const HOME = marketingRoutes.find(r => r.path === '/');
+const HOME = marketingRoutes.find(r => r.path === '/')!;
 
 const LANDING_JSONLD = [
   {
@@ -31,7 +26,13 @@ const LANDING_JSONLD = [
   },
 ];
 
-const FEATURES = [
+interface Feature {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}
+
+const FEATURES: Feature[] = [
   {
     icon: <Link2 size={24} color="var(--color-yellow)" />,
     title: 'Custom Short Links',
@@ -62,6 +63,14 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(
+      typeof localStorage !== 'undefined' && !!localStorage.getItem('token')
+    );
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Seo
@@ -72,7 +81,7 @@ export default function LandingPage() {
       />
       <Navbar variant="dark" isAuthenticated={isAuthenticated} />
 
-      {/* ── Hero ── */}
+      {/* -- Hero -- */}
       <section
         style={{
           backgroundColor: 'var(--color-dark)',
@@ -140,7 +149,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* -- Features -- */}
       <section id="features" className="responsive-section-pad" style={{ backgroundColor: 'var(--color-white)' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <h2 className="section-heading">Everything you need to share smarter</h2>
@@ -159,11 +168,11 @@ export default function LandingPage() {
                   transition: 'box-shadow 200ms ease, transform 200ms ease',
                   cursor: 'default',
                 }}
-                onMouseEnter={e => {
+                onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
-                onMouseLeave={e => {
+                onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.currentTarget.style.boxShadow = 'var(--shadow-card)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
@@ -186,7 +195,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── How It Works ── */}
+      {/* -- How It Works -- */}
       <section className="responsive-section-pad" style={{ backgroundColor: 'var(--color-surface)' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 className="section-heading">Up and running in seconds</h2>
@@ -225,7 +234,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA Banner ── */}
+      {/* -- CTA Banner -- */}
       <section
         style={{
           backgroundColor: 'var(--color-dark)',

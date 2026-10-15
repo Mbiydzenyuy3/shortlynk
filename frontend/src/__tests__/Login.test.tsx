@@ -20,6 +20,8 @@ vi.mock('react-router-dom', async () => {
 import { apiFetch } from '../api';
 import Login from '../pages/login';
 
+const mockedApiFetch = vi.mocked(apiFetch);
+
 const renderLogin = () =>
   render(
     <MemoryRouter>
@@ -61,12 +63,12 @@ describe('Login page', () => {
     renderLogin();
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
     await waitFor(() => {
-      expect(apiFetch).not.toHaveBeenCalled();
+      expect(mockedApiFetch).not.toHaveBeenCalled();
     });
   });
 
   it('calls apiFetch with correct args on valid submit', async () => {
-    apiFetch.mockResolvedValueOnce({ token: 'abc123' });
+    mockedApiFetch.mockResolvedValueOnce({ token: 'abc123' });
     renderLogin();
 
     fireEvent.change(screen.getByPlaceholderText(/you@example\.com/i), {
@@ -78,7 +80,7 @@ describe('Login page', () => {
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalledWith('/api/oauth/login', expect.objectContaining({
+      expect(mockedApiFetch).toHaveBeenCalledWith('/api/oauth/login', expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({ email: 'test@example.com', password: 'secret' }),
       }));
@@ -86,7 +88,7 @@ describe('Login page', () => {
   });
 
   it('saves token to localStorage and navigates to /dashboard on success', async () => {
-    apiFetch.mockResolvedValueOnce({ token: 'abc123' });
+    mockedApiFetch.mockResolvedValueOnce({ token: 'abc123' });
     renderLogin();
 
     fireEvent.change(screen.getByPlaceholderText(/you@example\.com/i), {
@@ -104,7 +106,7 @@ describe('Login page', () => {
   });
 
   it('shows inline error message on failed login', async () => {
-    apiFetch.mockRejectedValueOnce(new Error('Invalid credentials'));
+    mockedApiFetch.mockRejectedValueOnce(new Error('Invalid credentials'));
     renderLogin();
 
     fireEvent.change(screen.getByPlaceholderText(/you@example\.com/i), {
@@ -122,7 +124,6 @@ describe('Login page', () => {
 
   it('shows password toggle button', () => {
     renderLogin();
-    // Should have a button to toggle password visibility
     const toggleBtn = screen.getByRole('button', { name: /show password|hide password|toggle password/i });
     expect(toggleBtn).toBeInTheDocument();
   });

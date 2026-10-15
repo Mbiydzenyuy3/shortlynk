@@ -20,7 +20,6 @@ const renderAuthLayout = (props = {}) =>
 describe('AuthLayout', () => {
   it('renders the Shortlynk brand in the left panel', () => {
     renderAuthLayout();
-    // There are two "Shortlynk" text nodes (left panel + right panel)
     const instances = screen.getAllByText('Shortlynk');
     expect(instances.length).toBeGreaterThanOrEqual(1);
   });

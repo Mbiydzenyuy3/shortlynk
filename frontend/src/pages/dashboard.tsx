@@ -5,16 +5,17 @@ import Navbar from '../components/Navbar';
 import ShortenBar from '../components/ShortenBar';
 import LinkTable from '../components/LinkTable';
 import Seo from '../components/Seo';
+import type { UrlItem } from '../types';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [urls, setUrls] = useState([]);
+  const [urls, setUrls] = useState<UrlItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchUrls = async () => {
     try {
       setLoading(true);
-      const data = await apiFetch('/api/shorten/my-urls');
+      const data = await apiFetch<{ urls: UrlItem[] }>('/api/shorten/my-urls');
       setUrls(data.urls || []);
     } catch {
       setUrls([]);
@@ -27,23 +28,22 @@ export default function Dashboard() {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/login'); return; }
     fetchUrls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDelete = async (shortCode) => {
+  const handleDelete = async (shortCode: string): Promise<void> => {
     try {
       await apiFetch(`/api/shorten/${shortCode}`, { method: 'DELETE' });
       setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
-    } catch (err) {
-      if (err.message === 'URL not found.') {
-        // Server confirmed the URL no longer exists — remove from local state
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'URL not found.') {
         setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
       }
-      // Network errors / 5xx: leave row in place (server may still have the record)
     }
   };
 
-  const handleEdit = async (shortCode, expireAt) => {
-    const data = await apiFetch(`/api/shorten/${shortCode}`, {
+  const handleEdit = async (shortCode: string, expireAt: string | null): Promise<void> => {
+    const data = await apiFetch<{ data?: { expire_at: string | null } }>(`/api/shorten/${shortCode}`, {
       method: 'PATCH',
       body: JSON.stringify({ expireAt }),
     });

@@ -1,19 +1,24 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { apiFetch } from '../api';
 import AuthLayout from '../components/AuthLayout';
 import Seo from '../components/Seo';
 
+interface RegisterForm {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export default function Register() {
-  const GOOGLE_OAUTH_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/oauth/google`;
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [form, setForm] = useState<RegisterForm>({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
@@ -22,14 +27,15 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const res = await apiFetch('/api/oauth/register', {
+      const res = await apiFetch<{ token: string }>('/api/oauth/register', {
         method: 'POST',
         body: JSON.stringify(form),
       });
       localStorage.setItem('token', res.token);
       navigate('/dashboard');
-    } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -64,7 +70,7 @@ export default function Register() {
             type="text"
             placeholder="yourname"
             value={form.username}
-            onChange={e => setForm({ ...form, username: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, username: e.target.value })}
           />
         </div>
         <div>
@@ -74,7 +80,7 @@ export default function Register() {
             type="email"
             placeholder="you@example.com"
             value={form.email}
-            onChange={e => setForm({ ...form, email: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, email: e.target.value })}
           />
         </div>
         <div style={{ position: 'relative' }}>
@@ -84,7 +90,7 @@ export default function Register() {
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
             value={form.password}
-            onChange={e => setForm({ ...form, password: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, password: e.target.value })}
             style={{ paddingRight: '40px' }}
           />
           <button
@@ -133,22 +139,6 @@ export default function Register() {
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
-
-        {/* Google OAuth — temporarily disabled until OAuth is fully configured
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '4px 0' }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border)' }} />
-          <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>or</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-border)' }} />
-        </div>
-        <button
-          type="button"
-          className="btn btn--ghost-light"
-          style={{ width: '100%', height: '48px', justifyContent: 'center', fontSize: '14px' }}
-          onClick={() => { window.location.href = GOOGLE_OAUTH_URL; }}
-        >
-          Continue with Google
-        </button>
-        */}
       </form>
     </AuthLayout>
     </>

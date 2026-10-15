@@ -1,11 +1,17 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../api';
 import Navbar from '../components/Navbar';
 import LinkTable from '../components/LinkTable';
 import Seo from '../components/Seo';
+import type { UrlItem } from '../types';
 
-const SORT_OPTIONS = [
+interface SortOption {
+  value: string;
+  label: string;
+}
+
+const SORT_OPTIONS: SortOption[] = [
   { value: 'newest', label: 'Newest' },
   { value: 'oldest', label: 'Oldest' },
   { value: 'clicks', label: 'Most Clicks' },
@@ -14,14 +20,14 @@ const SORT_OPTIONS = [
 
 export default function UrlListPage() {
   const navigate = useNavigate();
-  const [urls, setUrls] = useState([]);
+  const [urls, setUrls] = useState<UrlItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState('newest');
 
   const fetchUrls = async () => {
     try {
       setLoading(true);
-      const data = await apiFetch('/api/shorten/my-urls');
+      const data = await apiFetch<{ urls: UrlItem[] }>('/api/shorten/my-urls');
       setUrls(data.urls || []);
     } catch {
       setUrls([]);
@@ -34,23 +40,22 @@ export default function UrlListPage() {
     const token = localStorage.getItem('token');
     if (!token) { navigate('/login'); return; }
     fetchUrls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDelete = async (shortCode) => {
+  const handleDelete = async (shortCode: string): Promise<void> => {
     try {
       await apiFetch(`/api/shorten/${shortCode}`, { method: 'DELETE' });
       setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
-    } catch (err) {
-      if (err.message === 'URL not found.') {
-        // Server confirmed the URL no longer exists — remove from local state
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'URL not found.') {
         setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
       }
-      // Network errors / 5xx: leave row in place (server may still have the record)
     }
   };
 
-  const handleEdit = async (shortCode, expireAt) => {
-    const data = await apiFetch(`/api/shorten/${shortCode}`, {
+  const handleEdit = async (shortCode: string, expireAt: string | null): Promise<void> => {
+    const data = await apiFetch<{ data?: { expire_at: string | null } }>(`/api/shorten/${shortCode}`, {
       method: 'PATCH',
       body: JSON.stringify({ expireAt }),
     });
@@ -62,13 +67,13 @@ export default function UrlListPage() {
   };
 
   const sorted = [...urls].sort((a, b) => {
-    if (sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
-    if (sort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+    if (sort === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    if (sort === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     if (sort === 'clicks') return b.click_count - a.click_count;
     if (sort === 'expiring') {
       if (!a.expire_at) return 1;
       if (!b.expire_at) return -1;
-      return new Date(a.expire_at) - new Date(b.expire_at);
+      return new Date(a.expire_at).getTime() - new Date(b.expire_at).getTime();
     }
     return 0;
   });
@@ -85,7 +90,7 @@ export default function UrlListPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <select
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSort(e.target.value)}
               style={{
                 height: '40px',
                 padding: '0 12px',

@@ -20,6 +20,8 @@ vi.mock('react-router-dom', async () => {
 import { apiFetch } from '../api';
 import Dashboard from '../pages/dashboard';
 
+const mockedApiFetch = vi.mocked(apiFetch);
+
 const sampleLinks = [
   {
     short_code: 'abc123',
@@ -53,33 +55,30 @@ describe('Dashboard page', () => {
   });
 
   it('redirects to /login if no token in localStorage', () => {
-    apiFetch.mockResolvedValue({ urls: [] });
+    mockedApiFetch.mockResolvedValue({ urls: [] });
     renderDashboard();
     expect(mockNavigate).toHaveBeenCalledWith('/login');
   });
 
   it('does not redirect when token exists', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: [] });
+    mockedApiFetch.mockResolvedValue({ urls: [] });
     renderDashboard();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it('shows skeleton cards while loading', async () => {
     localStorage.setItem('token', 'test-token');
-    // Never resolves during this test, so loading stays true
-    apiFetch.mockImplementation(() => new Promise(() => {}));
+    mockedApiFetch.mockImplementation(() => new Promise(() => {}));
     renderDashboard();
-    // skeleton rows should appear
     const skeletons = document.querySelectorAll('.skeleton');
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('renders the Navbar with light variant', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: [] });
+    mockedApiFetch.mockResolvedValue({ urls: [] });
     renderDashboard();
-    // Navbar with light variant has a logout button when authenticated
     await waitFor(() => {
       expect(screen.getByText(/shortlynk/i)).toBeInTheDocument();
     });
@@ -87,7 +86,7 @@ describe('Dashboard page', () => {
 
   it('shows empty state when no links exist', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: [] });
+    mockedApiFetch.mockResolvedValue({ urls: [] });
     renderDashboard();
     await waitFor(() => {
       expect(screen.getByText(/no links yet/i)).toBeInTheDocument();
@@ -96,7 +95,7 @@ describe('Dashboard page', () => {
 
   it('renders link cards after fetching links', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: sampleLinks });
+    mockedApiFetch.mockResolvedValue({ urls: sampleLinks });
     renderDashboard();
     await waitFor(() => {
       expect(
@@ -118,10 +117,9 @@ describe('Dashboard page', () => {
       expire_at: null,
       created_at: new Date().toISOString(),
     }));
-    apiFetch.mockResolvedValue({ urls: manyLinks });
+    mockedApiFetch.mockResolvedValue({ urls: manyLinks });
     renderDashboard();
     await waitFor(() => {
-      // All 5 links should be visible (old bug cleared when count >= 3)
       expect(
         screen.getByText('https://shortlynk-production.up.railway.app/code0')
       ).toBeInTheDocument();
@@ -133,7 +131,7 @@ describe('Dashboard page', () => {
 
   it('displays All links section header with count', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: sampleLinks });
+    mockedApiFetch.mockResolvedValue({ urls: sampleLinks });
     renderDashboard();
     await waitFor(() => {
       expect(screen.getByText(/all links/i)).toBeInTheDocument();
@@ -142,7 +140,7 @@ describe('Dashboard page', () => {
 
   it('renders the ShortenBar component', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: [] });
+    mockedApiFetch.mockResolvedValue({ urls: [] });
     renderDashboard();
     await waitFor(() => {
       expect(
@@ -153,10 +151,8 @@ describe('Dashboard page', () => {
 
   it('prepends new link when handleNewLink is called via ShortenBar', async () => {
     localStorage.setItem('token', 'test-token');
-    // First call is the initial fetchUrls
-    apiFetch
+    mockedApiFetch
       .mockResolvedValueOnce({ urls: sampleLinks })
-      // Second call is ShortenBar posting a new URL
       .mockResolvedValueOnce({
         shortened_URL: 'https://shortlynk-production.up.railway.app/newcode',
         short_code: 'newcode',
@@ -172,14 +168,12 @@ describe('Dashboard page', () => {
       ).toBeInTheDocument();
     });
 
-    // Shorten a new URL
     fireEvent.change(screen.getByPlaceholderText(/paste url here/i), {
       target: { value: 'https://newsite.com' },
     });
     fireEvent.click(screen.getByRole('button', { name: /shorten/i }));
 
     await waitFor(() => {
-      // The new shortened URL should appear inline in ShortenBar result
       expect(
         screen.getByText('https://shortlynk-production.up.railway.app/newcode')
       ).toBeInTheDocument();
@@ -188,9 +182,8 @@ describe('Dashboard page', () => {
 
   it('removes a link from the list when handleDelete is called', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch
+    mockedApiFetch
       .mockResolvedValueOnce({ urls: sampleLinks })
-      // Delete API call
       .mockResolvedValueOnce({});
 
     renderDashboard();
@@ -200,7 +193,6 @@ describe('Dashboard page', () => {
       ).toBeInTheDocument();
     });
 
-    // Click the delete button for the first link
     const deleteButtons = screen.getAllByTitle(/delete/i);
     fireEvent.click(deleteButtons[0]);
 
@@ -215,7 +207,7 @@ describe('Dashboard page', () => {
 
   it('shows search input to filter links', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: sampleLinks });
+    mockedApiFetch.mockResolvedValue({ urls: sampleLinks });
     renderDashboard();
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/search or filter/i)).toBeInTheDocument();
@@ -224,7 +216,7 @@ describe('Dashboard page', () => {
 
   it('filters links based on search input', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: sampleLinks });
+    mockedApiFetch.mockResolvedValue({ urls: sampleLinks });
     renderDashboard();
 
     await waitFor(() => {
@@ -233,7 +225,6 @@ describe('Dashboard page', () => {
       ).toBeInTheDocument();
     });
 
-    // Search for "another"
     fireEvent.change(screen.getByPlaceholderText(/search or filter/i), {
       target: { value: 'another' },
     });
@@ -254,16 +245,16 @@ describe('Dashboard page', () => {
 
   it('calls apiFetch to GET /api/shorten/my-urls on mount', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch.mockResolvedValue({ urls: [] });
+    mockedApiFetch.mockResolvedValue({ urls: [] });
     renderDashboard();
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalledWith('/api/shorten/my-urls');
+      expect(mockedApiFetch).toHaveBeenCalledWith('/api/shorten/my-urls');
     });
   });
 
   it('calls apiFetch DELETE when deleting a link', async () => {
     localStorage.setItem('token', 'test-token');
-    apiFetch
+    mockedApiFetch
       .mockResolvedValueOnce({ urls: sampleLinks })
       .mockResolvedValueOnce({});
 
@@ -278,7 +269,7 @@ describe('Dashboard page', () => {
     fireEvent.click(deleteButtons[0]);
 
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalledWith('/api/shorten/abc123', {
+      expect(mockedApiFetch).toHaveBeenCalledWith('/api/shorten/abc123', {
         method: 'DELETE',
       });
     });

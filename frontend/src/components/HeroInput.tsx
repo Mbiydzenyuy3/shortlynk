@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Copy, Check, ExternalLink, ChevronRight } from 'lucide-react';
 import { apiFetch } from '../api';
 
 export default function HeroInput() {
   const [url, setUrl] = useState('');
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleShorten = async (e) => {
+  const handleShorten = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setResult(null);
@@ -22,7 +22,7 @@ export default function HeroInput() {
 
     setLoading(true);
     try {
-      const data = await apiFetch('/api/shorten/guest', {
+      const data = await apiFetch<{ shortened_URL: string }>('/api/shorten/guest', {
         method: 'POST',
         body: JSON.stringify({ longUrl: url.trim() }),
       });
@@ -36,9 +36,11 @@ export default function HeroInput() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(result);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (result) {
+      navigator.clipboard.writeText(result);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -50,7 +52,7 @@ export default function HeroInput() {
           type="text"
           placeholder="Paste your long URL here..."
           value={url}
-          onChange={e => setUrl(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
         />
         <button
           className="btn btn--primary"

@@ -1,14 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import LinkRow from '../LinkRow';
+import type { UrlItem } from '../../types';
 
-const MOCK_URL = {
+const MOCK_URL: UrlItem = {
+  id: '1',
   short_code: 'abc123',
   short_url: 'https://shrt.ly/abc123',
   long_url: 'https://example.com/very/long/path',
   click_count: 5,
   created_at: '2026-06-25T10:40:00Z',
   expire_at: null,
+  updated_at: '2026-06-25T10:40:00Z',
 };
 
 beforeEach(() => {
@@ -17,7 +20,7 @@ beforeEach(() => {
   });
 });
 
-function wrap(ui) {
+function wrap(ui: React.ReactElement) {
   return render(<table><tbody>{ui}</tbody></table>);
 }
 
@@ -82,5 +85,5 @@ test('shows error message when onEdit throws', async () => {
   fireEvent.click(screen.getByTitle('Edit expiry'));
   fireEvent.click(screen.getByText('Save'));
   await waitFor(() => expect(screen.getByText('URL not found.')).toBeInTheDocument());
-  expect(screen.getByText('Save')).toBeInTheDocument(); // stays in edit mode
+  expect(screen.getByText('Save')).toBeInTheDocument();
 });

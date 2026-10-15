@@ -1,18 +1,17 @@
-// Per-page metadata.
-//
-// React 19 hoists <title>, <meta> and <link> into <head> natively — on the
-// client it moves them into document.head, and in renderToString it emits
-// them at the front of the output, where scripts/prerender.js lifts them
-// into the <head> of the generated file. No helmet library is involved.
-//
-// <script type="application/ld+json"> is NOT hoisted and renders inline.
-// That is fine: search engines read JSON-LD anywhere in the document.
-
 export const SITE_URL = (
   import.meta.env.VITE_SITE_URL || 'https://shortlynk.store'
 ).replace(/\/$/, '');
 
 const DEFAULT_OG_IMAGE = '/og-default.png';
+
+interface SeoProps {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
 
 export default function Seo({
   title,
@@ -21,7 +20,7 @@ export default function Seo({
   ogImage = DEFAULT_OG_IMAGE,
   noindex = false,
   jsonLd,
-}) {
+}: SeoProps) {
   const absoluteImage = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
   const absoluteCanonical = canonical ? `${SITE_URL}${canonical}` : null;
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];

@@ -20,6 +20,8 @@ vi.mock('react-router-dom', async () => {
 import { apiFetch } from '../api';
 import Register from '../pages/register';
 
+const mockedApiFetch = vi.mocked(apiFetch);
+
 const renderRegister = () =>
   render(
     <MemoryRouter>
@@ -61,13 +63,13 @@ describe('Register page', () => {
     renderRegister();
     fireEvent.click(screen.getByRole('button', { name: /create account/i }));
     await waitFor(() => {
-      expect(apiFetch).not.toHaveBeenCalled();
+      expect(mockedApiFetch).not.toHaveBeenCalled();
     });
   });
 
   it('does not use alert()', async () => {
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-    apiFetch.mockRejectedValueOnce(new Error('Server error'));
+    mockedApiFetch.mockRejectedValueOnce(new Error('Server error'));
     renderRegister();
 
     fireEvent.change(screen.getByPlaceholderText(/yourname/i), { target: { value: 'user' } });
@@ -82,7 +84,7 @@ describe('Register page', () => {
   });
 
   it('calls apiFetch with correct args on valid submit', async () => {
-    apiFetch.mockResolvedValueOnce({});
+    mockedApiFetch.mockResolvedValueOnce({});
     renderRegister();
 
     fireEvent.change(screen.getByPlaceholderText(/yourname/i), { target: { value: 'testuser' } });
@@ -91,7 +93,7 @@ describe('Register page', () => {
     fireEvent.click(screen.getByRole('button', { name: /create account/i }));
 
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalledWith('/api/oauth/register', expect.objectContaining({
+      expect(mockedApiFetch).toHaveBeenCalledWith('/api/oauth/register', expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({ username: 'testuser', email: 'test@example.com', password: 'password123' }),
       }));
@@ -99,7 +101,7 @@ describe('Register page', () => {
   });
 
   it('stores the token and goes to the dashboard on successful registration', async () => {
-    apiFetch.mockResolvedValueOnce({ token: 'fake-jwt' });
+    mockedApiFetch.mockResolvedValueOnce({ token: 'fake-jwt' });
     renderRegister();
 
     fireEvent.change(screen.getByPlaceholderText(/yourname/i), { target: { value: 'testuser' } });
@@ -114,7 +116,7 @@ describe('Register page', () => {
   });
 
   it('shows inline error message on failed registration', async () => {
-    apiFetch.mockRejectedValueOnce(new Error('Registration failed'));
+    mockedApiFetch.mockRejectedValueOnce(new Error('Registration failed'));
     renderRegister();
 
     fireEvent.change(screen.getByPlaceholderText(/yourname/i), { target: { value: 'testuser' } });

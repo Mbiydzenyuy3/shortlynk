@@ -2,12 +2,20 @@
 //
 // Consumed by:
 //   - scripts/prerender.js  (which routes to render, and the sitemap)
-//   - src/pages/*.jsx       (title/description passed to <Seo>)
+//   - src/pages/*.tsx       (title/description passed to <Seo>)
 //
 // Descriptions must be 120-158 characters; titles at most 60.
-// Both rules are enforced by src/__tests__/routes.test.js.
+// Both rules are enforced by src/__tests__/routes.test.ts.
 
-export const marketingRoutes = [
+interface MarketingRoute {
+  path: string;
+  title: string;
+  description: string;
+  priority: number;
+  changefreq: string;
+}
+
+export const marketingRoutes: MarketingRoute[] = [
   {
     path: '/',
     title: 'Shortlynk — Free URL Shortener with Click Analytics',
@@ -19,7 +27,7 @@ export const marketingRoutes = [
 ];
 
 // Never prerendered, never in the sitemap, always noindex.
-export const appRoutes = [
+export const appRoutes: string[] = [
   '/dashboard',
   '/login',
   '/register',
@@ -27,6 +35,6 @@ export const appRoutes = [
   '/oauth/callback',
 ];
 
-export function getAllPrerenderRoutes() {
+export function getAllPrerenderRoutes(): MarketingRoute[] {
   return [...marketingRoutes];
 }

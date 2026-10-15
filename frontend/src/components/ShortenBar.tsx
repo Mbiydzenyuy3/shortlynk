@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { apiFetch } from '../api';
 
-export default function ShortenBar({ onShortened }) {
+interface ShortenBarProps {
+  onShortened: () => void;
+}
+
+export default function ShortenBar({ onShortened }: ShortenBarProps) {
   const [url, setUrl] = useState('');
   const [shortCode, setShortCode] = useState('');
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     if (!url.trim()) { setError('Please enter a URL.'); return; }
@@ -20,10 +24,10 @@ export default function ShortenBar({ onShortened }) {
     }
     setLoading(true);
     try {
-      const body = { longUrl: url.trim() };
+      const body: Record<string, string> = { longUrl: url.trim() };
       if (shortCode.trim()) body.shortCode = shortCode.trim();
 
-      const data = await apiFetch('/api/shorten', {
+      const data = await apiFetch<{ shortened_URL: string }>('/api/shorten', {
         method: 'POST',
         body: JSON.stringify(body),
       });
@@ -31,17 +35,20 @@ export default function ShortenBar({ onShortened }) {
       setUrl('');
       setShortCode('');
       onShortened();
-    } catch (err) {
-      setError(err.message || 'Failed to shorten URL.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to shorten URL.';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(result);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (result) {
+      navigator.clipboard.writeText(result);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -64,7 +71,7 @@ export default function ShortenBar({ onShortened }) {
           type="text"
           placeholder="Paste URL here"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
           style={{
             flex: 2,
             border: 'none',
@@ -81,7 +88,7 @@ export default function ShortenBar({ onShortened }) {
           type="text"
           placeholder="Alias (e.g. my-link)"
           value={shortCode}
-          onChange={(e) => setShortCode(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShortCode(e.target.value)}
           pattern="^[a-zA-Z0-9-_]+$"
           title="Only letters, numbers, hyphens, and underscores (4-30 chars)"
           style={{

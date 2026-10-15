@@ -1,6 +1,13 @@
 import { useState } from 'react';
+import type { ClickSourceData, SourceItem } from '../types';
 
-function SourceBar({ name, count, maxCount }) {
+interface SourceBarProps {
+  name: string;
+  count: number;
+  maxCount: number;
+}
+
+function SourceBar({ name, count, maxCount }: SourceBarProps) {
   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -31,7 +38,12 @@ function SourceBar({ name, count, maxCount }) {
   );
 }
 
-function SourceSection({ title, items }) {
+interface SourceSectionProps {
+  title: string | undefined;
+  items: SourceItem[];
+}
+
+function SourceSection({ title, items }: SourceSectionProps) {
   if (!items || items.length === 0) {
     return (
       <div>
@@ -57,10 +69,17 @@ function SourceSection({ title, items }) {
   );
 }
 
-export default function ClickSources({ data, loading }) {
-  const [activeTab, setActiveTab] = useState('referrers');
+interface ClickSourcesProps {
+  data: ClickSourceData | null;
+  loading: boolean;
+}
 
-  const tabs = [
+type TabKey = keyof ClickSourceData;
+
+export default function ClickSources({ data, loading }: ClickSourcesProps) {
+  const [activeTab, setActiveTab] = useState<TabKey>('referrers');
+
+  const tabs: { key: TabKey; label: string }[] = [
     { key: 'referrers', label: 'Referrers' },
     { key: 'countries', label: 'Countries' },
     { key: 'devices', label: 'Devices' },

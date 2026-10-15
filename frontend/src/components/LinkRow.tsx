@@ -1,16 +1,24 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Copy, Check, ExternalLink, Pencil, Trash2, BarChart2 } from 'lucide-react';
 import ClickSources from './ClickSources';
 import { apiFetch } from '../api';
+import type { UrlItem, ClickSourceData } from '../types';
 
-const tdStyle = {
+const tdStyle: React.CSSProperties = {
   padding: '0 16px',
   verticalAlign: 'middle',
   fontSize: '14px',
   color: 'var(--color-text-primary)',
 };
 
-function ActionBtn({ onClick, title, children, danger }) {
+interface ActionBtnProps {
+  onClick?: () => void;
+  title: string;
+  children: React.ReactNode;
+  danger?: boolean;
+}
+
+function ActionBtn({ onClick, title, children, danger }: ActionBtnProps) {
   return (
     <button
       onClick={onClick}
@@ -29,10 +37,10 @@ function ActionBtn({ onClick, title, children, danger }) {
         color: danger ? 'var(--color-error)' : 'var(--color-text-secondary)',
         transition: 'background 150ms ease',
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.style.backgroundColor = danger ? 'var(--color-error-tint)' : 'var(--color-surface)';
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.style.backgroundColor = 'transparent';
       }}
     >
@@ -41,13 +49,19 @@ function ActionBtn({ onClick, title, children, danger }) {
   );
 }
 
-export default function LinkRow({ url, onDelete, onEdit }) {
+interface LinkRowProps {
+  url: UrlItem;
+  onDelete: (shortCode: string) => Promise<void>;
+  onEdit: (shortCode: string, expireAt: string | null) => Promise<void>;
+}
+
+export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
   const [editMode, setEditMode] = useState(false);
   const [editDate, setEditDate] = useState('');
   const [editError, setEditError] = useState('');
   const [copyDone, setCopyDone] = useState(false);
   const [showSources, setShowSources] = useState(false);
-  const [sourcesData, setSourcesData] = useState(null);
+  const [sourcesData, setSourcesData] = useState<ClickSourceData | null>(null);
   const [loadingSources, setLoadingSources] = useState(false);
 
   const createdAt =
@@ -71,8 +85,9 @@ export default function LinkRow({ url, onDelete, onEdit }) {
     try {
       await onEdit(url.short_code, editDate || null);
       setEditMode(false);
-    } catch (err) {
-      setEditError(err.message || 'Failed to update expiry.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to update expiry.';
+      setEditError(message);
     }
   };
 
@@ -81,9 +96,9 @@ export default function LinkRow({ url, onDelete, onEdit }) {
       setLoadingSources(true);
       setShowSources(true);
       try {
-        const res = await apiFetch(`/s/${url.short_code}/sources`);
+        const res = await apiFetch<{ data: ClickSourceData }>(`/s/${url.short_code}/sources`);
         setSourcesData(res.data);
-      } catch (err) {
+      } catch {
         // Failed to load sources
       } finally {
         setLoadingSources(false);
@@ -93,7 +108,7 @@ export default function LinkRow({ url, onDelete, onEdit }) {
     }
   };
 
-  const rowBase = {
+  const rowBase: React.CSSProperties = {
     borderBottom: '1px solid var(--color-border)',
     transition: 'background 150ms ease',
   };
@@ -110,7 +125,7 @@ export default function LinkRow({ url, onDelete, onEdit }) {
             <input
               type="date"
               value={editDate}
-              onChange={(e) => setEditDate(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDate(e.target.value)}
               className="input-field"
               style={{ width: '160px', height: '32px' }}
             />
@@ -141,8 +156,8 @@ export default function LinkRow({ url, onDelete, onEdit }) {
     <>
       <tr
         style={{ ...rowBase, height: '56px', borderBottom: showSources ? 'none' : '1px solid var(--color-border)' }}
-        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+        onMouseEnter={(e: React.MouseEvent<HTMLTableRowElement>) => { e.currentTarget.style.backgroundColor = 'var(--color-surface)'; }}
+        onMouseLeave={(e: React.MouseEvent<HTMLTableRowElement>) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
         <td style={{ ...tdStyle, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
           {createdAt}
