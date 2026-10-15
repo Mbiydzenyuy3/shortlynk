@@ -28,7 +28,7 @@ vi.mock('../../shared/utils/short-code-gen.js', () => ({
 }));
 
 import prisma from '../../shared/prisma.js';
-import { createShortUrl, getUserUrls, deleteUrl } from './urls.service.js';
+import { createShortUrl, getUserUrls, deleteUrl, updateUrlExpiry } from './urls.service.js';
 
 describe('URLs Service', () => {
   beforeEach(() => {
@@ -82,7 +82,13 @@ describe('URLs Service', () => {
         userId: 'user-1',
       });
 
-      expect(result).toEqual(existing);
+      expect(result).toEqual({
+        shortCode: existing.shortCode,
+        shortUrl: existing.shortUrl,
+        longUrl: existing.longUrl,
+        createdAt: existing.createdAt,
+        expireAt: existing.expireAt,
+      });
       expect(prisma.url.create).not.toHaveBeenCalled();
     });
   });
@@ -123,6 +129,52 @@ describe('URLs Service', () => {
 
       const result = await deleteUrl('nope', 'user-1');
       expect(result).toBe(false);
+    });
+  });
+
+  describe('updateUrlExpiry', () => {
+    it('should update expiry for an owned URL', async () => {
+      const existingUrl = {
+        id: 'url-1', shortCode: 'abc', longUrl: 'https://example.com',
+        shortUrl: 'http://localhost:4000/s/abc', clickCount: 0,
+        createdAt: new Date(), expireAt: null, userId: 'user-1', updatedAt: new Date(),
+      };
+      const updatedUrl = { ...existingUrl, expireAt: new Date('2025-12-31') };
+
+      vi.mocked(prisma.url.findFirst).mockResolvedValue(existingUrl);
+      vi.mocked(prisma.url.update).mockResolvedValue(updatedUrl);
+
+      const result = await updateUrlExpiry('abc', 'user-1', '2025-12-31');
+      expect(result).toBeTruthy();
+      expect(prisma.url.update).toHaveBeenCalledWith({
+        where: { id: 'url-1' },
+        data: { expireAt: new Date('2025-12-31') },
+        select: { shortCode: true, shortUrl: true, longUrl: true, expireAt: true, clickCount: true, createdAt: true },
+      });
+    });
+
+    it('should return null for non-existent or unowned URL', async () => {
+      vi.mocked(prisma.url.findFirst).mockResolvedValue(null);
+
+      const result = await updateUrlExpiry('nope', 'user-1', '2025-12-31');
+      expect(result).toBeNull();
+      expect(prisma.url.update).not.toHaveBeenCalled();
+    });
+
+    it('should pass null expiry to clear expiration', async () => {
+      const existingUrl = {
+        id: 'url-1', shortCode: 'abc', longUrl: 'https://example.com',
+        shortUrl: 'http://localhost:4000/s/abc', clickCount: 0,
+        createdAt: new Date(), expireAt: new Date('2025-01-01'), userId: 'user-1', updatedAt: new Date(),
+      };
+
+      vi.mocked(prisma.url.findFirst).mockResolvedValue(existingUrl);
+      vi.mocked(prisma.url.update).mockResolvedValue({ ...existingUrl, expireAt: null });
+
+      await updateUrlExpiry('abc', 'user-1', null);
+      expect(prisma.url.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { expireAt: null } }),
+      );
     });
   });
 });
