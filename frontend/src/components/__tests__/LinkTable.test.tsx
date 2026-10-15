@@ -6,11 +6,11 @@ import type { UrlItem } from '../../types';
 vi.mock('../LinkRow', () => ({
   default: ({ url, onDelete }: { url: UrlItem; onDelete: (code: string) => void; onEdit: (code: string, expireAt: string | null) => void }) => (
     <tr data-testid="link-row">
-      <td>{url.short_code}</td>
-      <td>{url.short_url}</td>
-      <td>{url.long_url}</td>
-      <td>{url.click_count ?? 0}</td>
-      <td><button onClick={() => onDelete(url.short_code)}>Delete</button></td>
+      <td>{url.shortCode}</td>
+      <td>{url.shortUrl}</td>
+      <td>{url.longUrl}</td>
+      <td>{url.clickCount ?? 0}</td>
+      <td><button onClick={() => onDelete(url.shortCode)}>Delete</button></td>
     </tr>
   ),
 }));
@@ -18,13 +18,13 @@ vi.mock('../LinkRow', () => ({
 const makeUrls = (n: number): UrlItem[] =>
   Array.from({ length: n }, (_, i) => ({
     id: String(i),
-    short_code: `code${i}`,
-    short_url: `https://shrt.ly/code${i}`,
-    long_url: `https://example.com/page/${i}`,
-    click_count: i,
-    created_at: new Date().toISOString(),
-    expire_at: null,
-    updated_at: new Date().toISOString(),
+    shortCode: `code${i}`,
+    shortUrl: `https://shrt.ly/code${i}`,
+    longUrl: `https://example.com/page/${i}`,
+    clickCount: i,
+    createdAt: new Date().toISOString(),
+    expireAt: null,
+    updatedAt: new Date().toISOString(),
   }));
 
 const noop = vi.fn();

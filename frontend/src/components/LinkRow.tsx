@@ -65,25 +65,25 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
   const [loadingSources, setLoadingSources] = useState(false);
 
   const createdAt =
-    new Date(url.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+    new Date(url.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
     ', ' +
-    new Date(url.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    new Date(url.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(url.short_url);
+    navigator.clipboard.writeText(url.shortUrl);
     setCopyDone(true);
     setTimeout(() => setCopyDone(false), 2000);
   };
 
   const handleEditOpen = () => {
-    setEditDate(url.expire_at ? new Date(url.expire_at).toISOString().split('T')[0] : '');
+    setEditDate(url.expireAt ? new Date(url.expireAt).toISOString().split('T')[0] : '');
     setEditError('');
     setEditMode(true);
   };
 
   const handleSave = async () => {
     try {
-      await onEdit(url.short_code, editDate || null);
+      await onEdit(url.shortCode, editDate || null);
       setEditMode(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to update expiry.';
@@ -96,7 +96,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
       setLoadingSources(true);
       setShowSources(true);
       try {
-        const res = await apiFetch<{ data: ClickSourceData }>(`/s/${url.short_code}/sources`);
+        const res = await apiFetch<{ data: ClickSourceData }>(`/s/${url.shortCode}/sources`);
         setSourcesData(res.data);
       } catch {
         // Failed to load sources
@@ -119,7 +119,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
         <td colSpan={5} style={{ padding: '12px 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <span style={{ color: 'var(--color-yellow)', fontWeight: 600, fontSize: '14px' }}>
-              {url.short_url}
+              {url.shortUrl}
             </span>
             <label style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>Expires:</label>
             <input
@@ -163,7 +163,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
           {createdAt}
         </td>
         <td style={tdStyle}>
-          <span style={{ color: 'var(--color-yellow)', fontWeight: 600 }}>{url.short_url}</span>
+          <span style={{ color: 'var(--color-yellow)', fontWeight: 600 }}>{url.shortUrl}</span>
         </td>
         <td
           style={{
@@ -174,11 +174,11 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
             whiteSpace: 'nowrap',
             color: 'var(--color-text-secondary)',
           }}
-          title={url.long_url}
+          title={url.longUrl}
         >
-          {url.long_url}
+          {url.longUrl}
         </td>
-        <td style={{ ...tdStyle, textAlign: 'center' }}>{url.click_count ?? 0}</td>
+        <td style={{ ...tdStyle, textAlign: 'center' }}>{url.clickCount ?? 0}</td>
         <td style={{ ...tdStyle, textAlign: 'right' }}>
           <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
             <ActionBtn onClick={handleToggleSources} title="Analytics">
@@ -187,7 +187,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
             <ActionBtn onClick={handleCopy} title="Copy short link">
               {copyDone ? <Check size={14} color="var(--color-yellow)" /> : <Copy size={14} />}
             </ActionBtn>
-            <a href={url.short_url} target="_blank" rel="noopener noreferrer">
+            <a href={url.shortUrl} target="_blank" rel="noopener noreferrer">
               <ActionBtn title="Open link">
                 <ExternalLink size={14} />
               </ActionBtn>
@@ -195,7 +195,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
             <ActionBtn onClick={handleEditOpen} title="Edit expiry">
               <Pencil size={14} />
             </ActionBtn>
-            <ActionBtn onClick={() => onDelete(url.short_code)} title="Delete" danger>
+            <ActionBtn onClick={() => onDelete(url.shortCode)} title="Delete" danger>
               <Trash2 size={14} />
             </ActionBtn>
           </div>

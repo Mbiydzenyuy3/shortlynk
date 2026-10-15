@@ -34,22 +34,22 @@ export default function Dashboard() {
   const handleDelete = async (shortCode: string): Promise<void> => {
     try {
       await apiFetch(`/api/shorten/${shortCode}`, { method: 'DELETE' });
-      setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
+      setUrls((prev) => prev.filter((u) => u.shortCode !== shortCode));
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'URL not found.') {
-        setUrls((prev) => prev.filter((u) => u.short_code !== shortCode));
+        setUrls((prev) => prev.filter((u) => u.shortCode !== shortCode));
       }
     }
   };
 
   const handleEdit = async (shortCode: string, expireAt: string | null): Promise<void> => {
-    const data = await apiFetch<{ data?: { expire_at: string | null } }>(`/api/shorten/${shortCode}`, {
+    const data = await apiFetch<{ data?: { expireAt: string | null } }>(`/api/shorten/${shortCode}`, {
       method: 'PATCH',
       body: JSON.stringify({ expireAt }),
     });
     setUrls((prev) =>
       prev.map((u) =>
-        u.short_code === shortCode ? { ...u, expire_at: data.data?.expire_at ?? null } : u
+        u.shortCode === shortCode ? { ...u, expireAt: data.data?.expireAt ?? null } : u
       )
     );
   };

@@ -5,13 +5,13 @@ import type { UrlItem } from '../../types';
 
 const MOCK_URL: UrlItem = {
   id: '1',
-  short_code: 'abc123',
-  short_url: 'https://shrt.ly/abc123',
-  long_url: 'https://example.com/very/long/path',
-  click_count: 5,
-  created_at: '2026-06-25T10:40:00Z',
-  expire_at: null,
-  updated_at: '2026-06-25T10:40:00Z',
+  shortCode: 'abc123',
+  shortUrl: 'https://shrt.ly/abc123',
+  longUrl: 'https://example.com/very/long/path',
+  clickCount: 5,
+  createdAt: '2026-06-25T10:40:00Z',
+  expireAt: null,
+  updatedAt: '2026-06-25T10:40:00Z',
 };
 
 beforeEach(() => {
@@ -24,14 +24,14 @@ function wrap(ui: React.ReactElement) {
   return render(<table><tbody>{ui}</tbody></table>);
 }
 
-test('renders short_url, long_url, and click_count', () => {
+test('renders shortUrl, longUrl, and clickCount', () => {
   wrap(<LinkRow url={MOCK_URL} onDelete={vi.fn()} onEdit={vi.fn()} />);
   expect(screen.getByText('https://shrt.ly/abc123')).toBeInTheDocument();
   expect(screen.getByText('https://example.com/very/long/path')).toBeInTheDocument();
   expect(screen.getByText('5')).toBeInTheDocument();
 });
 
-test('copy button calls clipboard.writeText with short_url', () => {
+test('copy button calls clipboard.writeText with shortUrl', () => {
   wrap(<LinkRow url={MOCK_URL} onDelete={vi.fn()} onEdit={vi.fn()} />);
   fireEvent.click(screen.getByTitle('Copy short link'));
   expect(navigator.clipboard.writeText).toHaveBeenCalledWith('https://shrt.ly/abc123');

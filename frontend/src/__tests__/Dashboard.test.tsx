@@ -24,20 +24,20 @@ const mockedApiFetch = vi.mocked(apiFetch);
 
 const sampleLinks = [
   {
-    short_code: 'abc123',
-    short_url: 'https://shortlynk-production.up.railway.app/abc123',
-    long_url: 'https://example.com/some/very/long/path',
-    click_count: 5,
-    expire_at: null,
-    created_at: new Date().toISOString(),
+    shortCode: 'abc123',
+    shortUrl: 'https://shortlynk-production.up.railway.app/abc123',
+    longUrl: 'https://example.com/some/very/long/path',
+    clickCount: 5,
+    expireAt: null,
+    createdAt: new Date().toISOString(),
   },
   {
-    short_code: 'def456',
-    short_url: 'https://shortlynk-production.up.railway.app/def456',
-    long_url: 'https://another.com/page',
-    click_count: 10,
-    expire_at: '2026-12-31T00:00:00.000Z',
-    created_at: new Date().toISOString(),
+    shortCode: 'def456',
+    shortUrl: 'https://shortlynk-production.up.railway.app/def456',
+    longUrl: 'https://another.com/page',
+    clickCount: 10,
+    expireAt: '2026-12-31T00:00:00.000Z',
+    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -110,12 +110,12 @@ describe('Dashboard page', () => {
   it('shows all links regardless of count (no artificial clearing)', async () => {
     localStorage.setItem('token', 'test-token');
     const manyLinks = Array.from({ length: 5 }, (_, i) => ({
-      short_code: `code${i}`,
-      short_url: `https://shortlynk-production.up.railway.app/code${i}`,
-      long_url: `https://example.com/${i}`,
-      click_count: i,
-      expire_at: null,
-      created_at: new Date().toISOString(),
+      shortCode: `code${i}`,
+      shortUrl: `https://shortlynk-production.up.railway.app/code${i}`,
+      longUrl: `https://example.com/${i}`,
+      clickCount: i,
+      expireAt: null,
+      createdAt: new Date().toISOString(),
     }));
     mockedApiFetch.mockResolvedValue({ urls: manyLinks });
     renderDashboard();
@@ -154,11 +154,11 @@ describe('Dashboard page', () => {
     mockedApiFetch
       .mockResolvedValueOnce({ urls: sampleLinks })
       .mockResolvedValueOnce({
-        shortened_URL: 'https://shortlynk-production.up.railway.app/newcode',
-        short_code: 'newcode',
-        long_url: 'https://newsite.com',
-        click_count: 0,
-        expire_at: null,
+        shortUrl: 'https://shortlynk-production.up.railway.app/newcode',
+        shortCode: 'newcode',
+        longUrl: 'https://newsite.com',
+        clickCount: 0,
+        expireAt: null,
       });
 
     renderDashboard();

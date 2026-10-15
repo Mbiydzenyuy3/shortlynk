@@ -12,12 +12,12 @@ import Dashboard from '../dashboard';
 const mockedApiFetch = vi.mocked(apiFetch);
 
 const MOCK_URL = {
-  short_code: 'abc',
-  short_url: 'https://shrt.ly/abc',
-  long_url: 'https://example.com',
-  click_count: 1,
-  created_at: new Date().toISOString(),
-  expire_at: null,
+  shortCode: 'abc',
+  shortUrl: 'https://shrt.ly/abc',
+  longUrl: 'https://example.com',
+  clickCount: 1,
+  createdAt: new Date().toISOString(),
+  expireAt: null,
 };
 
 beforeEach(() => {
@@ -55,7 +55,7 @@ test('handleDelete calls DELETE endpoint and removes url from state', async () =
 });
 
 test('handleEdit calls PATCH endpoint with shortCode and expireAt', async () => {
-  const updated = { ...MOCK_URL, expire_at: '2026-08-01T00:00:00Z' };
+  const updated = { ...MOCK_URL, expireAt: '2026-08-01T00:00:00Z' };
   mockedApiFetch
     .mockResolvedValueOnce({ urls: [MOCK_URL] })
     .mockResolvedValueOnce({ success: true, data: updated });

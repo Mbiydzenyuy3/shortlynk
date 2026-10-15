@@ -27,11 +27,11 @@ export default function ShortenBar({ onShortened }: ShortenBarProps) {
       const body: Record<string, string> = { longUrl: url.trim() };
       if (shortCode.trim()) body.shortCode = shortCode.trim();
 
-      const data = await apiFetch<{ shortened_URL: string }>('/api/shorten', {
+      const data = await apiFetch<{ shortUrl: string }>('/api/shorten', {
         method: 'POST',
         body: JSON.stringify(body),
       });
-      setResult(data.shortened_URL);
+      setResult(data.shortUrl);
       setUrl('');
       setShortCode('');
       onShortened();

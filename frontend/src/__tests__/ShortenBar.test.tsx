@@ -12,7 +12,7 @@ describe('ShortenBar', () => {
 
   it('shows inline result after successful shorten and calls onShortened', async () => {
     const onShortened = vi.fn();
-    vi.spyOn(api, 'apiFetch').mockResolvedValue({ shortened_URL: 'https://short.ly/xyz' });
+    vi.spyOn(api, 'apiFetch').mockResolvedValue({ shortUrl: 'https://short.ly/xyz' });
     render(<ShortenBar onShortened={onShortened} />);
 
     fireEvent.change(screen.getByPlaceholderText(/paste url here/i), {

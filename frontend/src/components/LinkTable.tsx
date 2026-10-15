@@ -47,8 +47,8 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }: LinkTable
 
   const filtered = urls.filter(
     (u) =>
-      u.short_url?.toLowerCase().includes(search.toLowerCase()) ||
-      u.long_url?.toLowerCase().includes(search.toLowerCase())
+      u.shortUrl?.toLowerCase().includes(search.toLowerCase()) ||
+      u.longUrl?.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -130,7 +130,7 @@ export default function LinkTable({ urls, loading, onDelete, onEdit }: LinkTable
             </tr>
           ) : (
             paged.map((u) => (
-              <LinkRow key={u.short_code} url={u} onDelete={onDelete} onEdit={onEdit} />
+              <LinkRow key={u.shortCode} url={u} onDelete={onDelete} onEdit={onEdit} />
             ))
           )}
         </tbody>

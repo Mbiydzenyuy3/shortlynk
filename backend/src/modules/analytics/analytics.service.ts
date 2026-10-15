@@ -91,7 +91,7 @@ export async function getUrlStats(shortCode: string, userId: string) {
   if (!url) return null;
 
   const shortUrl = `${config.BASE_URL}/s/${shortCode}`;
-  return { ...url, short_url: shortUrl };
+  return { ...url, shortUrl };
 }
 
 export async function getClickSources(shortCode: string, userId: string) {
