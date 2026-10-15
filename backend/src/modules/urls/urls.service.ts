@@ -2,6 +2,7 @@ import prisma from '../../shared/prisma.js';
 import { config } from '../../config/index.js';
 import generateShortCode from '../../shared/utils/short-code-gen.js';
 import { checkUrlSafety } from '../../shared/utils/safe-browsing.js';
+import { AppError } from '../../shared/utils/app-error.js';
 
 export async function createShortUrl({
   longUrl,
@@ -20,6 +21,7 @@ export async function createShortUrl({
   if (userId) {
     const existing = await prisma.url.findFirst({
       where: { longUrl, userId },
+      select: { id: true, shortCode: true, shortUrl: true, longUrl: true, createdAt: true, expireAt: true },
     });
 
     if (existing) {
@@ -30,9 +32,7 @@ export async function createShortUrl({
         if (shortCode && shortCode !== existing.shortCode) {
           const conflict = await prisma.url.findUnique({ where: { shortCode } });
           if (conflict) {
-            const err = new Error('Custom Code conflict') as Error & { status?: number };
-            err.status = 409;
-            throw err;
+            throw new AppError('Custom code already in use', 409);
           }
         }
 
@@ -50,7 +50,7 @@ export async function createShortUrl({
         });
       }
 
-      return existing;
+      return { shortCode: existing.shortCode, shortUrl: existing.shortUrl, longUrl: existing.longUrl, createdAt: existing.createdAt, expireAt: existing.expireAt };
     }
   }
 

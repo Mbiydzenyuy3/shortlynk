@@ -1,12 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
 import logger from '../utils/logger.js';
 
-interface AppError extends Error {
+interface HttpError extends Error {
   status?: number;
   statusCode?: number;
 }
 
-export default function errorHandler(err: AppError, req: Request, res: Response, _next: NextFunction): void {
+export default function errorHandler(err: HttpError, req: Request, res: Response, _next: NextFunction): void {
   const status = err.status ?? err.statusCode ?? 500;
 
   logger.error({ err, method: req.method, url: req.url }, 'Unhandled error');

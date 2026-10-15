@@ -1,5 +1,6 @@
 import logger from './logger.js';
 import { config } from '../../config/index.js';
+import { AppError } from './app-error.js';
 
 const URLHAUS_ENDPOINT = 'https://urlhaus-api.abuse.ch/v1/url/';
 const GOOGLE_ENDPOINT = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
@@ -14,7 +15,7 @@ async function checkURLhaus(url: string): Promise<void> {
   if (!response.ok) return;
   const data = (await response.json()) as { query_status?: string };
   if (data.query_status === 'is_listed') {
-    throw new Error('UNSAFE_URL');
+    throw new AppError('This URL has been flagged as unsafe by Google Safe Browsing and cannot be shortened.', 400);
   }
 }
 
@@ -38,7 +39,7 @@ async function checkGoogleSafeBrowsing(url: string): Promise<void> {
   if (!response.ok) return;
   const data = (await response.json()) as { matches?: unknown[] };
   if (data.matches && data.matches.length > 0) {
-    throw new Error('UNSAFE_URL');
+    throw new AppError('This URL has been flagged as unsafe by Google Safe Browsing and cannot be shortened.', 400);
   }
 }
 
@@ -47,7 +48,7 @@ export async function checkUrlSafety(url: string): Promise<void> {
     await checkURLhaus(url);
     await checkGoogleSafeBrowsing(url);
   } catch (err) {
-    if (err instanceof Error && err.message === 'UNSAFE_URL') throw err;
+    if (err instanceof AppError) throw err;
     logger.warn({ err }, 'URL safety check failed — skipping');
   }
 }

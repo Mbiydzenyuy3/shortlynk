@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../../shared/prisma.js';
 import { config } from '../../config/index.js';
+import { AppError } from '../../shared/utils/app-error.js';
 import type { RegisterInput, LoginInput } from './auth.validator.js';
 
 function generateToken(user: { id: string; email: string; username: string }): string {
@@ -15,9 +16,7 @@ function generateToken(user: { id: string; email: string; username: string }): s
 export async function registerUser({ username, email, password }: RegisterInput) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    const error = new Error('Email already used by another user') as Error & { status?: number };
-    error.status = 409;
-    throw error;
+    throw new AppError('Email already used by another user', 409);
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,16 +37,12 @@ export async function registerUser({ username, email, password }: RegisterInput)
 export async function loginUser({ email, password }: LoginInput) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.password) {
-    const error = new Error('The password or email is not correct') as Error & { status?: number };
-    error.status = 401;
-    throw error;
+    throw new AppError('The password or email is not correct', 401);
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    const error = new Error('The password or email is not correct') as Error & { status?: number };
-    error.status = 401;
-    throw error;
+    throw new AppError('The password or email is not correct', 401);
   }
 
   const token = generateToken(user);

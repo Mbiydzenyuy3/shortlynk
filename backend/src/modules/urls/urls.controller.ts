@@ -6,62 +6,34 @@ export async function createShortUrl(req: Request, res: Response): Promise<void>
   const { longUrl, shortCode, expiresAt } = req.body;
   const userId = (req as AuthenticatedRequest).user.id;
 
-  try {
-    const result = await UrlService.createShortUrl({
-      longUrl,
-      shortCode: shortCode ?? null,
-      expireAt: expiresAt ?? null,
-      userId,
-    });
+  const result = await UrlService.createShortUrl({
+    longUrl,
+    shortCode: shortCode ?? null,
+    expireAt: expiresAt ?? null,
+    userId,
+  });
 
-    res.status(201).json({
-      message: 'Short URL created successfully',
-      ...result,
-    });
-  } catch (err) {
-    if (err instanceof Error) {
-      if (err.message === 'UNSAFE_URL') {
-        res.status(400).json({
-          success: false,
-          message: 'This URL has been flagged as unsafe and cannot be shortened.',
-        });
-        return;
-      }
-      if (err.message.includes('conflict') || err.message.includes('Conflict')) {
-        res.status(409).json({ message: 'Custom code already in use' });
-        return;
-      }
-    }
-    throw err;
-  }
+  res.status(201).json({
+    message: 'Short URL created successfully',
+    ...result,
+  });
 }
 
 export async function createGuestShortUrl(req: Request, res: Response): Promise<void> {
   const { longUrl } = req.body;
 
-  try {
-    const result = await UrlService.createShortUrl({
-      longUrl,
-      shortCode: null,
-      expireAt: null,
-      userId: null,
-    });
+  const result = await UrlService.createShortUrl({
+    longUrl,
+    shortCode: null,
+    expireAt: null,
+    userId: null,
+  });
 
-    res.status(201).json({
-      message: 'Short URL created successfully',
-      shortened_URL: result.shortUrl,
-      short_code: result.shortCode,
-    });
-  } catch (err) {
-    if (err instanceof Error && err.message === 'UNSAFE_URL') {
-      res.status(400).json({
-        success: false,
-        message: 'This URL has been flagged as unsafe and cannot be shortened.',
-      });
-      return;
-    }
-    throw err;
-  }
+  res.status(201).json({
+    message: 'Short URL created successfully',
+    shortened_URL: result.shortUrl,
+    short_code: result.shortCode,
+  });
 }
 
 export async function getUserUrls(req: Request, res: Response): Promise<void> {
