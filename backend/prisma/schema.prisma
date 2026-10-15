@@ -31,6 +31,7 @@ model Url {
   user       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   clickLogs  ClickLog[]
 
+  @@index([userId])
   @@map("urls")
 }
 
@@ -44,5 +45,6 @@ model ClickLog {
   browser   String?  @db.VarChar(100)
   url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
 
+  @@index([urlId])
   @@map("click_logs")
 }
