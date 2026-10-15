@@ -65,7 +65,7 @@ export default function HeroInput() {
       </form>
 
       {error && (
-        <p style={{ color: '#FCA5A5', fontSize: '13px', marginTop: '8px' }}>{error}</p>
+        <p style={{ color: 'var(--color-error)', fontSize: '13px', marginTop: '8px' }}>{error}</p>
       )}
 
       {result && (

@@ -7,7 +7,7 @@ export const shortenUrlSchema = z.object({
     .max(30, 'Custom alias cannot exceed 30 characters.')
     .regex(/^[a-zA-Z0-9-_]+$/, 'Custom alias can only contain letters, numbers, hyphens (-), and underscores (_).')
     .optional(),
-  expiresAt: z.string().datetime({ offset: true }).optional().or(z.string().date().optional()),
+  expiresAt: z.string().datetime({ offset: true, local: true }).optional().or(z.string().date().optional()),
 });
 
 export const guestShortenSchema = z.object({
@@ -15,8 +15,9 @@ export const guestShortenSchema = z.object({
 });
 
 export const updateUrlSchema = z.object({
-  expireAt: z.string().datetime({ offset: true }).nullable().optional().or(z.string().date().nullable().optional()),
+  expireAt: z.string().datetime({ offset: true, local: true }).nullable().optional().or(z.string().date().nullable().optional()),
 });
 
 export type ShortenUrlInput = z.infer<typeof shortenUrlSchema>;
+export type GuestShortenInput = z.infer<typeof guestShortenSchema>;
 export type UpdateUrlInput = z.infer<typeof updateUrlSchema>;

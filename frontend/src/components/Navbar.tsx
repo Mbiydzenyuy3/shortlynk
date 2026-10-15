@@ -110,7 +110,7 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }: Na
               >
                 <div style={{
                   width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: 'var(--color-yellow)', color: '#fff',
+                  backgroundColor: 'var(--color-yellow)', color: 'var(--color-white)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '11px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -148,7 +148,7 @@ export default function Navbar({ variant = 'dark', isAuthenticated = false }: Na
                   <button
                     onClick={handleLogout}
                     style={{ ...dropdownItem, color: 'var(--color-error)' }}
-                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#FEF2F2'; }}
+                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = 'var(--color-error-tint)'; }}
                     onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     <LogOut size={14} />

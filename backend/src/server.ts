@@ -9,8 +9,11 @@ const server = http.createServer(app);
 async function gracefulShutdown(signal: string): Promise<void> {
   logger.info({ signal }, 'Gracefully shutting down');
 
-  server.close(() => {
-    logger.info('HTTP server closed');
+  await new Promise<void>((resolve) => {
+    server.close(() => {
+      logger.info('HTTP server closed');
+      resolve();
+    });
   });
 
   try {
