@@ -8,6 +8,7 @@ const Register = lazy(() => import("./pages/register"));
 const Dashboard = lazy(() => import("./pages/dashboard"));
 const OAuthCallback = lazy(() => import("./pages/oauthCallback"));
 const UrlListPage = lazy(() => import("./pages/urls"));
+const NotFound = lazy(() => import("./pages/notFound"));
 
 export function AppRoutes() {
   return (
@@ -19,7 +20,7 @@ export function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/urls" element={<UrlListPage />} />
-        <Route path="*" element={<p>Page not found</p>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   );
