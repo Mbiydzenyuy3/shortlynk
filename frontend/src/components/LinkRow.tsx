@@ -63,6 +63,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
   const [showSources, setShowSources] = useState(false);
   const [sourcesData, setSourcesData] = useState<ClickSourceData | null>(null);
   const [loadingSources, setLoadingSources] = useState(false);
+  const [sourcesError, setSourcesError] = useState('');
 
   const createdAt =
     new Date(url.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
@@ -95,11 +96,13 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
     if (!showSources && !sourcesData) {
       setLoadingSources(true);
       setShowSources(true);
+      setSourcesError('');
       try {
         const res = await apiFetch<{ data: ClickSourceData }>(`/s/${url.shortCode}/sources`);
         setSourcesData(res.data);
-      } catch {
-        // Failed to load sources
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to load analytics.';
+        setSourcesError(message);
       } finally {
         setLoadingSources(false);
       }
@@ -204,7 +207,7 @@ export default function LinkRow({ url, onDelete, onEdit }: LinkRowProps) {
       {showSources && (
         <tr>
           <td colSpan={5} style={{ padding: 0 }}>
-            <ClickSources data={sourcesData} loading={loadingSources} />
+            <ClickSources data={sourcesData} loading={loadingSources} error={sourcesError} />
           </td>
         </tr>
       )}

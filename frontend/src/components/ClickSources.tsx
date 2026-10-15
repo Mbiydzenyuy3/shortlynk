@@ -72,11 +72,12 @@ function SourceSection({ title, items }: SourceSectionProps) {
 interface ClickSourcesProps {
   data: ClickSourceData | null;
   loading: boolean;
+  error?: string;
 }
 
 type TabKey = keyof ClickSourceData;
 
-export default function ClickSources({ data, loading }: ClickSourcesProps) {
+export default function ClickSources({ data, loading, error }: ClickSourcesProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('referrers');
 
   const tabs: { key: TabKey; label: string }[] = [
@@ -85,6 +86,14 @@ export default function ClickSources({ data, loading }: ClickSourcesProps) {
     { key: 'devices', label: 'Devices' },
     { key: 'browsers', label: 'Browsers' },
   ];
+
+  if (error) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <p style={{ fontSize: '13px', color: 'var(--color-error)' }}>{error}</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
