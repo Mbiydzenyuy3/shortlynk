@@ -1,53 +1,23 @@
 {
-  "name": "feature rich url shortener api",
+  "name": "shortlynk",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "main": "www",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "test:guest": "node --experimental-vm-modules node_modules/.bin/jest src/tests/guestUrl.test.js",
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "npm run dev --workspace=backend & npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=frontend",
+    "typecheck": "npm run typecheck --workspace=backend && npm run typecheck --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend"
   },
-  "jest": {
-    "transform": {},
-    "setupFilesAfterEnv": [
-      "./src/tests/jest.setup.cjs"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/frontend/"
-    ]
-  },
-  "keywords": [],
   "author": "Leila",
   "license": "MIT",
-  "description": "",
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "debug": "^4.4.0",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "express-rate-limit": "^7.5.0",
-    "geoip-lite": "^1.4.10",
-    "googleapis": "^148.0.0",
-    "helmet": "^8.1.0",
-    "http-errors": "^2.0.0",
-    "joi": "^17.13.3",
-    "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "nanoid": "^5.1.5",
-    "pg": "^8.15.6",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "ua-parser-js": "^2.0.10"
-  },
-  "devDependencies": {
-    "jest": "^30.4.2",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.2.2"
-  }
+  "description": "Full-stack URL shortener SaaS — TypeScript, Express 5, Prisma, React 19"
 }
